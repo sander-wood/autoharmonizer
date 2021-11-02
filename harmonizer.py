@@ -10,8 +10,36 @@ from tensorflow.python.keras.utils.np_utils import to_categorical
 from keras.preprocessing.sequence import pad_sequences
 from config import *
 
-def sample(prediction, temperature=TEMPERATURE):
+def sample(prediction, last_note=False, temperature=TEMPERATURE, rhythm_density=RHYTHM_DENSITY):
     
+    # 判断prediction是否一维 (chord)
+    if prediction.shape[0]==1:
+
+        prediction = prediction.tolist()[0]
+
+        # 置零不可能的值
+        prediction[14] = 0
+        prediction[15] = 0
+
+        if not last_note:
+
+            prediction[0] = 0
+    
+    else:
+        
+        # 记录非保持符的概率
+        rest_prob = 1-prediction[2]
+
+        # 提升其余字符概率
+        for idx in range(len(prediction)):
+
+            if idx!=2:
+
+                prediction[idx] += prediction[2]*rhythm_density*(prediction[idx]/rest_prob)
+
+        # 抑制保持符概率
+        prediction[2] = prediction[2]*(1-rhythm_density)
+
     # 判断温度参数是否为0
     if temperature==0:
 
@@ -91,27 +119,27 @@ def generate_chord(chord_model, melody_data, rhythm_data, segments_length=SEGMEN
         melody_segs = []
         chord_segs = []
 
-        # 以'131','13'分别表示旋律以及和弦序列的填充符
+        # 以'131','14'分别表示旋律以及和弦序列的填充符
         for i in range(segments_length):
 
             if i!=segments_length-1:
 
                 melody_segs.append([131]*16)
 
-            chord_segs.append([13]*4)
+            chord_segs.append([14]*4)
             
         melody_seg = [131]*16
-
+    
         # 读取节奏序列中的每一个token
         for t_idx, token in enumerate(rhythm):
-
+            
             # 判断是否为'保持符' 
             if token<2:
                 
                 # 判断是否为'休止符'
                 if token==0:
 
-                    chord_segs.append([12]*4)
+                    chord_segs.append([13]*4)
 
                 else:
 
@@ -125,6 +153,16 @@ def generate_chord(chord_model, melody_data, rhythm_data, segments_length=SEGMEN
                 melody_segs.append(melody_seg)
                 melody_seg = [melody[t_idx]]
 
+                # 若读到最后一位
+                if (t_idx+1)==len(rhythm):
+                    
+                    # 确保melody_seg在四拍内
+                    if len(melody_seg)>16:
+
+                        melody_seg = melody_seg[:16]
+                    
+                    melody_segs.append(melody_seg)  
+
             else:
 
                 melody_seg.append(melody[t_idx])     
@@ -133,12 +171,12 @@ def generate_chord(chord_model, melody_data, rhythm_data, segments_length=SEGMEN
                 if (t_idx+1)==len(rhythm):
                     
                     # 确保melody_seg在四拍内
-                    if len(melody_seg )>16:
+                    if len(melody_seg)>16:
 
                         melody_seg = melody_seg[:16]
                     
                     melody_segs.append(melody_seg)  
-
+                    
         # 以'131'表示旋律序列的填充符
         for i in range(segments_length):
 
@@ -149,16 +187,17 @@ def generate_chord(chord_model, melody_data, rhythm_data, segments_length=SEGMEN
         chord_segs_length = segments_length*4+segments_length-1
         
         for i in range(segments_length, len(chord_segs)):
-
-            if len(chord_segs[i])==[12, 12, 12, 12]:
+            
+            # 若当前的是休止符则跳过
+            if len(chord_segs[i])==[13, 13, 13, 13]:
 
                 continue
 
-            # 以'132'和'14'分别表示旋律以及和弦序列的分隔符
+            # 以'132'和'15'分别表示旋律以及和弦序列的分隔符
             input_melody_left = mul_seg(melody_segs,i,segments_length,'left',132)
             input_melody_mid = melody_segs[i]
             input_melody_right = mul_seg(melody_segs,i,segments_length,'right',132)[::-1]
-            input_chord_left = mul_seg(chord_segs,i,segments_length,'left',14)
+            input_chord_left = mul_seg(chord_segs,i,segments_length,'left',15)
             
             # 补齐输入数据
             input_melody_left = pad_sequences([input_melody_left], padding='post', maxlen=melody_segs_length)
@@ -167,11 +206,13 @@ def generate_chord(chord_model, melody_data, rhythm_data, segments_length=SEGMEN
             input_chord_left = pad_sequences([input_chord_left], padding='post', maxlen=chord_segs_length)
 
             # 预测下一个和弦
-            predictions = chord_model.predict(x=[input_melody_left, input_melody_mid, input_melody_right, input_chord_left])
+            predictions = chord_model.predict(x=[input_melody_left, input_melody_mid, input_melody_right, input_chord_left]) 
+            
+            # 采样
             first = sample(predictions[0])
             second = sample(predictions[1])
             third = sample(predictions[2])
-            fourth = sample(predictions[3])
+            fourth = sample(predictions[3], last_note=True)
 
             # 更新输入序列
             chord_segs[i] = [first, second, third, fourth]
@@ -181,29 +222,31 @@ def generate_chord(chord_model, melody_data, rhythm_data, segments_length=SEGMEN
         
         cnt = 0
         chord = []
+        
         # 重构和声信息
         for t_idx, token in enumerate(rhythm):
 
             # 读到'和弦'
             if token<2:
                 
-                cur_chord = []
+                cur_chord = chord_segs[cnt]
 
-                if chord_segs[cnt]==[12,12,12,12]:
+                if cur_chord==[13,13,13,13]:
 
                     chord.append(129)
                     cnt += 1
                     continue
                 
-                # 组装'和弦'
-                for cur_token in chord_segs[cnt]:
+                # 去除和声列表'0'
+                for cur_idx in range(4):
 
-                    cur_chord.append(cur_token)
-                
-                # 确认最后一位不为'0'
-                if cur_chord[-1]==0:
+                    if cur_chord[cur_idx]==0:
 
-                    del cur_chord[-1]
+                        del cur_chord[cur_idx]
+                    
+                    else:
+
+                        cur_chord[cur_idx]-=1
 
                 bias = cur_chord[0]+48
                 cur_chord = [bias]+[cur_token+bias for cur_token in cur_chord[1:]]
@@ -299,11 +342,11 @@ if __name__ == "__main__":
     melody_data, beat_data, gap_data, meta_data, melody_parts, filenames = music_loader(path='inputs', fromDataset=False)
 
     # 构建节奏模型并生成节奏信息
-    rhythm_model = build_rhythm_model('rhythm_'+WEIGHTS_PATH)
+    rhythm_model = build_rhythm_model(SEGMENT_LENGTH, RNN_SIZE, NUM_LAYERS, 'rhythm_'+WEIGHTS_PATH)
     rhythm_data = generate_rhythm(rhythm_model, melody_data, beat_data)
-
+    
     # 构建和声模型并生成和声信息
-    chord_model = build_chord_model('chord_'+WEIGHTS_PATH)
+    chord_model = build_chord_model(SEGMENTS_LENGTH, RNN_SIZE, NUM_LAYERS, 'chord_'+WEIGHTS_PATH)
     chord_data = generate_chord(chord_model, melody_data, rhythm_data)
     
     # 输出midi音乐文件

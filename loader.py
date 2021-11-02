@@ -145,8 +145,8 @@ def chord2vec(element):
     
     elif isinstance(element, note.Rest):
 
-        # 返回4个'12'表示当前和弦为'休止符'
-        return [12]*4
+        # 返回4个'13'表示当前和弦为'休止符'
+        return [13]*4
 
     # 缩减MIDI音高值域
     first_note = pitch_list[0]
@@ -155,12 +155,12 @@ def chord2vec(element):
 
     vec = []
 
-    # 确保音符数量小于4并且都在一个八度(12个半音)以内
+    # 确保音符数量小于4并且都在一个八度以内 (值域1~12)
     for i, element in enumerate(pitch_list):
 
         if element<12 and i<4:
 
-            vec.append(element)
+            vec.append(element+1)
 
     # 补零对齐
     vec = vec + [0]*(4-len(vec))
@@ -175,7 +175,6 @@ def melody2txt(melody_part, filename):
     pre_duration = 0
     melody_txt = []
     beat_txt = []
-    note_cnt = 0
     ts_cnt = 0
     ts_seq = []
     
@@ -198,21 +197,6 @@ def melody2txt(melody_part, filename):
             if note_duration==0:
 
                 continue
-
-            # 更新节拍序列
-            note_steps = int(note_duration/0.25)
-            beat_start = note_cnt%len(beat_sequence)
-            beat_end = (note_cnt+note_steps)%len(beat_sequence)
-
-            if beat_start<beat_end:
-
-                beat_txt += beat_sequence[beat_start:beat_end]
-
-            else:
-
-                beat_txt += beat_sequence[beat_start:]+beat_sequence[:beat_end]
-
-            note_cnt += note_steps
 
             # 读取音符的MIDI音高（值域1~128）
             if isinstance(element, note.Note):
@@ -243,6 +227,7 @@ def melody2txt(melody_part, filename):
                 melody_txt.append(note_list[-1])
             
             # 以'130'表示单个长为16分音符的'保持符'
+            note_steps = int(note_duration/0.25)
             melody_txt += [130]*(note_steps-1)
 
             # 读取音符的offset
@@ -265,33 +250,73 @@ def melody2txt(melody_part, filename):
         elif isinstance(element, meter.TimeSignature):
 
             ts_seq.append(element)
-            beat_sequence = beat_seq(element)
-            ts_cnt = int(element.offset/0.25)
-            note_cnt = 0
     
+    # 初始化
+    cur_cnt = 0
+    pre_cnt = 0
+    beat_sequence = beat_seq(meter.TimeSignature('c'))
+
+    # 创建节拍序列
+    if len(ts_seq)!=0:
+
+        # 逐个读取拍号
+        for ts in ts_seq:
+            
+            # 计算当前时间步
+            cur_cnt = ts.offset/0.25
+
+            # 若当前时间步非零
+            if cur_cnt!=0:
+                
+                # 补上先前的节拍序列
+                beat_txt += beat_sequence*int((cur_cnt-pre_cnt)/len(beat_sequence))
+
+                # 计算不完全的节拍序列
+                missed_beat = (cur_cnt-pre_cnt)%len(beat_sequence)
+
+                if missed_beat!=0:
+
+                    beat_txt += beat_sequence[:missed_beat]
+
+            # 更新变量
+            beat_sequence = beat_seq(ts)
+            pre_cnt = cur_cnt
+
+    # 处理最后一个拍号
+    cur_cnt = len(melody_txt)
+    beat_txt += beat_sequence*int((cur_cnt-pre_cnt)/len(beat_sequence))
+
+    # 计算不完全的节拍序列
+    missed_beat = int((cur_cnt-pre_cnt)%len(beat_sequence))
+
+    if missed_beat!=0:
+
+        beat_txt += beat_sequence[:missed_beat]
+
     return melody_txt, beat_txt, ts_cnt, beat_sequence, ts_seq
 
-    
+
 def music2txt(score, filename, fromDataset):
 
     # 初始化
     rhythm_txt = []
     melody_segs = []
     chord_segs = []
-    beat_sequence = beat_seq(meter.TimeSignature('c'))
 
     # 从dataset里读数据
     if fromDataset:
         
+        # 转调至C大调/A小调
+        score, gap, ks, tp = transpose(score)
+
         try:
 
             # 读取旋律声部以及和声声部
-            score, gap, ks, tp = transpose(score)
             melody_part = score.parts[0].flat
             chord_part = score.parts[1].flat
         
         except:
-            
+
             print("Warning: Failed to read \"%s\"" %filename)
             return None
 
@@ -329,6 +354,7 @@ def music2txt(score, filename, fromDataset):
 
                 # 用'0'表示'休止符'的Onset
                 rhythm_txt.append(0)
+                
             else:
 
                 # 用'1'表示'和弦'的Onset
@@ -357,7 +383,7 @@ def music2txt(score, filename, fromDataset):
 
                 upper = min(len(rhythm_txt),len(melody_txt))
 
-                # 保证旋律和节奏序列等长
+                # 保证旋律和节拍以及节奏序列等长
                 melody_txt = melody_txt[:upper]
                 beat_txt = beat_txt[:upper]
                 rhythm_txt = rhythm_txt[:upper]
@@ -403,15 +429,25 @@ def music2txt(score, filename, fromDataset):
                 else:
 
                     melody_seg.append(melody_txt[idx])
+            
+            if len(melody_segs)!=len(chord_segs):
+
+                upper = min(len(melody_segs),len(chord_segs))
+
+                # 保证旋律片段序列以及和声片段序列等长
+                melody_segs = melody_segs[:upper]
+                chord_segs = chord_segs[:upper]
 
     # 读取旋律声部
     else:
 
+        # 转调至C大调/A小调
+        original_score = score
+        score, gap, ks, tp = transpose(score)
+
         try:
 
             # 读取旋律声部以及和声声部
-            original_score = score
-            score, gap, ks, tp = transpose(score)
             melody_part = score.parts[0].flat
         
         except:
@@ -480,7 +516,7 @@ def music_loader(path=DATASET_PATH, fromDataset=True):
                     melody_txt, beat_txt, rhythm_txt, melody_segs, chord_segs = music2txt(score, filename, fromDataset=True)
 
                     if melody_txt!=None:
-
+                        
                         melody_data.append(melody_txt)
                         beat_data.append(beat_txt)
                         rhythm_data.append(rhythm_txt)
