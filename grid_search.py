@@ -20,7 +20,7 @@ best_para = []
 best_history = None
 
 # 加载训练集和验证集
-data, data_val = rhythm_model.create_training_data(segments_length=segments_length)
+data, data_val = rhythm_model.create_training_data(segment_length=segment_length)
 
 for rnn_size in rnn_size_list:
 
