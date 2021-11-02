@@ -9,7 +9,7 @@ OUTPUTS_PATH = "outputs"
 EXTENSION = ['.musicxml', '.xml', '.mxl', '.midi', '.mid', '.krn']
 
 # 'rhythm_model.py'和'chord_model.py'参数
-VAL_RATIO = 0
+VAL_RATIO = 0.1
 SEGMENT_LENGTH = 32
 SEGMENTS_LENGTH = 2
 RNN_SIZE = 256
