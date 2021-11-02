@@ -39,7 +39,7 @@ for rnn_size in rnn_size_list:
             print('Testing rhythm model with rnn_size==%d, num_layers==%d, batch_size==%d' %(rnn_size, num_layers, batch_size))
 
             # 训练模型
-            history = rhythm_model.train_model(data, data_val, segments_length, rnn_size, num_layers, batch_size, verbose=2)
+            history = rhythm_model.train_model(data, data_val, segment_length, rnn_size, num_layers, batch_size, verbose=2)
 
             for epoch, val_loss in enumerate(history.history['val_loss']):
 
