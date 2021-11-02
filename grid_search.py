@@ -34,7 +34,7 @@ for rnn_size in rnn_size_list:
             
             except:
 
-                print('There is othing to delete.')
+                print('There is nothing to delete.')
 
             print('Testing rhythm model with rnn_size==%d, num_layers==%d, batch_size==%d' %(rnn_size, num_layers, batch_size))
 
@@ -80,7 +80,7 @@ for rnn_size in rnn_size_list:
 
             except:
 
-                print('There is othing to delete.')
+                print('There is nothing to delete.')
 
             print('Testing chord model with rnn_size==%d, num_layers==%d, batch_size==%d' %(rnn_size, num_layers, batch_size))
 
