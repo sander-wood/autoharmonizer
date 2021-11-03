@@ -39,11 +39,11 @@ for rnn_size in rnn_size_list:
             print('Testing rhythm model with rnn_size==%d, num_layers==%d, batch_size==%d' %(rnn_size, num_layers, batch_size))
 
             # 训练模型
-            history = rhythm_model.train_model(data, data_val, segment_length, rnn_size, num_layers, batch_size, verbose=2)
+            history = rhythm_model.train_model(data, data_val, segment_length, rnn_size, num_layers, batch_size, verbose=1)
 
             for epoch, val_loss in enumerate(history.history['val_loss']):
 
-                print('Epoch %d: val_loss=%f.' %(epoch, val_loss))
+                print('Epoch %d: val_loss=%f.' %(epoch+1, val_loss))
                 
                 if val_loss<min_val_loss:
 
@@ -89,7 +89,7 @@ for rnn_size in rnn_size_list:
 
             for epoch, val_loss in enumerate(history.history['val_loss']):
 
-                print('Epoch %d: val_loss=%f.' %(epoch, val_loss))
+                print('Epoch %d: val_loss=%f.' %(epoch+1, val_loss))
                 
                 if val_loss<min_val_loss:
 
