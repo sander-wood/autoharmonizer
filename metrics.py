@@ -170,6 +170,32 @@ def get_MCTD(melody_list, chord_list):
     if cnt == 0: return 0
     return score / cnt
 
+def get_R1_and_R2(chord_list):
+    cnt = {}
+    for chord in chord_list:
+        if chord.quarterLength in cnt:
+            cnt[chord.quarterLength] += 1
+        else: cnt[chord.quarterLength] = 1
+    
+    R2 = len(cnt)
+
+    R1 = 0
+    for key, value in cnt.items():
+        value /= len(chord_list)
+        R1 += - value * np.log(value+1e-6)
+
+    return R1, R2
+
+def get_R3(melody_beat_txt, chord_rhythm_txt):
+    # chord onset distribution
+    cnt = [0, 0, 0, 0]
+    tot = 0
+    for i in range(len(chord_rhythm_txt)):
+        if chord_rhythm_txt[i] == 1:
+            cnt[melody_beat_txt[i]] += 1
+            tot += 1
+    return [i / tot for i in cnt]
+
 if __name__ == "__main__":
 
     filename = r'outputs/test.mid'
@@ -179,13 +205,14 @@ if __name__ == "__main__":
 
     melody_list = get_melody_list(melody_part)
     chord_list = get_chord_list(chord_part)
-
+    melody_txt, melody_beat_txt, chord_rhythm_txt, melody_segs, chord_segs = loader.music2txt(score, filename, fromDataset=True)
+    
     CHE, CC = get_CHE_and_CC(chord_list)
     CTD = get_CTD(chord_list)
     CTnCTR = get_CTnCTR(melody_list, chord_list)
     PCS = get_PCS(melody_list, chord_list)
     MCTD = get_MCTD(melody_list, chord_list)
-
+    
     print('CHE = ', CHE)
     print('CC = ', CC)
     print('CTD = ', CTD)
@@ -193,3 +220,10 @@ if __name__ == "__main__":
     print('PCS = ', PCS)
     print('MCTD = ', MCTD)
 
+    R1, R2 = get_R1_and_R2(chord_list)
+    R3 = get_R3(melody_beat_txt, chord_rhythm_txt)
+    
+    print('R1 = ', R1)
+    print('R2 = ', R2)
+    print('R3 = ', R3)
+    
