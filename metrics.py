@@ -4,6 +4,8 @@ from music21 import converter
 from music21 import note
 from music21 import chord
 import loader
+from config import *
+import os
 
 def get_melody_list(melody_part):
     melody_list = []
@@ -99,7 +101,12 @@ def get_CTnCTR(melody_list, chord_list):
     n = 0
     for chord_index in range(len(chord_list)):
         if (note_index >= len(melody_list)): break
-        while ((melody_list[note_index].offset < chord_list[chord_index].offset + chord_list[chord_index].quarterLength)
+
+        while melody_list[note_index].offset < chord_list[chord_index].offset:
+
+            note_index += 1
+
+        while ((melody_list[note_index].offset + melody_list[note_index].quarterLength <= chord_list[chord_index].offset + chord_list[chord_index].quarterLength)
             and (melody_list[note_index].offset >= chord_list[chord_index].offset)):
             if melody_list[note_index].pitch.pitchClass in chord_vec_list[chord_index]:
                 c += melody_list[note_index].quarterLength
@@ -129,6 +136,11 @@ def get_PCS(melody_list, chord_list):
     cnt = 0
     for chord_index in range(len(chord_list)):
         if (note_index >= len(melody_list)): break
+        
+        while melody_list[note_index].offset < chord_list[chord_index].offset:
+
+            note_index += 1
+
         while ((melody_list[note_index].offset < chord_list[chord_index].offset + chord_list[chord_index].quarterLength)
             and (melody_list[note_index].offset >= chord_list[chord_index].offset)):
             m = melody_list[note_index].pitch.pitchClass
@@ -156,6 +168,11 @@ def get_MCTD(melody_list, chord_list):
     cnt = 0
     for chord_index in range(len(chord_list)):
         if (note_index >= len(melody_list)): break
+        
+        while melody_list[note_index].offset < chord_list[chord_index].offset:
+
+            note_index += 1
+            
         while ((melody_list[note_index].offset < chord_list[chord_index].offset + chord_list[chord_index].quarterLength)
             and (melody_list[note_index].offset >= chord_list[chord_index].offset)):
             m = melody_list[note_index].pitch.pitchClass
@@ -194,36 +211,62 @@ def get_R3(melody_beat_txt, chord_rhythm_txt):
         if chord_rhythm_txt[i] == 1:
             cnt[melody_beat_txt[i]] += 1
             tot += 1
-    return [i / tot for i in cnt]
+    return np.array([i / tot for i in cnt])
+
 
 if __name__ == "__main__":
 
-    filename = r'outputs/test.mid'
-    score = converter.parse(filename)
-    melody_part = score.parts[0].flat
-    chord_part = score.parts[1].flat
+    cnt = 0
+    all_CHE = all_CC = all_CTD = all_CTnCTR = all_PCS = all_MCTD = all_R1 = all_R2 = 0
+    all_R3 = np.array([0., 0., 0., 0.])
 
-    melody_list = get_melody_list(melody_part)
-    chord_list = get_chord_list(chord_part)
-    melody_txt, melody_beat_txt, chord_rhythm_txt, melody_segs, chord_segs = loader.music2txt(score, filename, fromDataset=True)
-    
-    CHE, CC = get_CHE_and_CC(chord_list)
-    CTD = get_CTD(chord_list)
-    CTnCTR = get_CTnCTR(melody_list, chord_list)
-    PCS = get_PCS(melody_list, chord_list)
-    MCTD = get_MCTD(melody_list, chord_list)
-    
-    print('CHE = ', CHE)
-    print('CC = ', CC)
-    print('CTD = ', CTD)
-    print('CTnCTR = ', CTnCTR)
-    print('PCS = ', PCS)
-    print('MCTD = ', MCTD)
+    # 遍历文件夹下的所有音乐
+    for dirpath, dirlist, filelist in os.walk('dataset'):
+        # 逐个处理文件
+        for this_file in filelist:
+            
+            try:
 
-    R1, R2 = get_R1_and_R2(chord_list)
-    R3 = get_R3(melody_beat_txt, chord_rhythm_txt)
-    
-    print('R1 = ', R1)
-    print('R2 = ', R2)
-    print('R3 = ', R3)
-    
+                filename = os.path.join(dirpath, this_file)
+                print(filename)
+                score = converter.parse(filename)
+                melody_part = score.parts[0].flat
+                chord_part = score.parts[1].flat
+                melody_txt, melody_beat_txt, chord_rhythm_txt, melody_segs, chord_segs = loader.music2txt(score, filename, fromDataset=True)
+
+                melody_list = get_melody_list(melody_part)
+                chord_list = get_chord_list(chord_part)
+
+                CHE, CC = get_CHE_and_CC(chord_list)
+                CTD = get_CTD(chord_list)
+                CTnCTR = get_CTnCTR(melody_list, chord_list)
+                PCS = get_PCS(melody_list, chord_list)
+                MCTD = get_MCTD(melody_list, chord_list)
+                R1, R2 = get_R1_and_R2(chord_list)
+                R3 = get_R3(melody_beat_txt, chord_rhythm_txt)
+
+            except:
+
+                continue
+
+            all_CHE += CHE
+            all_CC += CC
+            all_CTD += CTD
+            all_CTnCTR += CTnCTR
+            all_PCS += PCS
+            all_MCTD += MCTD
+            all_R1 += R1
+            all_R2 += R2
+            all_R3 += R3
+
+            cnt += 1
+
+    print('CHE = ', all_CHE/cnt)
+    print('CC = ', all_CC/cnt)
+    print('CTD = ', all_CTD/cnt)
+    print('CTnCTR = ', all_CTnCTR/cnt)
+    print('PCS = ', all_PCS/cnt)
+    print('MCTD = ', all_MCTD/cnt)
+    print('R1 = ', all_R1/cnt)
+    print('R2 = ', all_R2/cnt)
+    print('R3 = ', all_R3/cnt)
