@@ -18,7 +18,7 @@ Keras: 2.3.0\
 tensorflow-gpu: 2.2.0\
 music21: 6.7.1\
 \
-PS: Third party libraries can be installed using the `pip install` command.\
+PS: Third party libraries can be installed using the `pip install` command.
 
 ## Generate Samples
 1. Put the melodies (MIDI or MusicXML) in the `inputs` folder;\
