@@ -20,7 +20,7 @@ music21: 6.7.1\
 \
 PS: Third party libraries can be installed using the `pip install` command.
 
-## Generate Samples
+## Melody Harmonization
 1. Put the melodies (MIDI or MusicXML) in the `inputs` folder;
 2. Simply run `harmonizer.py`;
 3. Wait a while and the harmonized melodies will be saved in the `outputs` folder.\
