@@ -3,9 +3,13 @@
 ## Melody Harmonization with Controllable Harmonic Rhythm
 
 This is the source code of AutoHarmonizer, a harmonic rhythm-controllable melody harmonization system. \
+\
 The input melodies and harmonized samples are in the 'inputs' and 'outputs' folders respectively.\
+\
 Musical discrimination test is available at https://sander-wood.github.io/autoharmonizer.\
+\
 Nottingham Lead Sheet Dataset (NLSD) and Session Lead Sheet Dataset (SLSD) are both in the 'dataset' folder.\
+\
 For more information, see our paper: arXiv paper.\
 
 ## Install Dependencies
@@ -14,7 +18,7 @@ Keras: 2.3.0\
 tensorflow-gpu: 2.2.0\
 music21: 6.7.1\
 \
-PS: Third party libraries can be installed using the `pip install` command.
+PS: Third party libraries can be installed using the 'pip install' command.\
 
 ## Generate Samples
 1. Put the melodies (MIDI or MusicXML) in the 'inputs' folder.\
