@@ -1,23 +1,30 @@
-# 路径设定
+# Path setting
 DATASET_PATH = "dataset"
 CORPUS_PATH = "corpus.bin"
 WEIGHTS_PATH = 'weights.hdf5'
 INPUTS_PATH = "inputs"
 OUTPUTS_PATH = "outputs"
 
-# 'loader.py'参数
-EXTENSION = ['.musicxml', '.xml', '.mxl', '.midi', '.mid', '.krn']
+# 'loader.py'
+EXTENSION = ['.musicxml', '.xml', '.mxl', '.midi', '.mid']
 
-# 'rhythm_model.py'和'chord_model.py'参数
-VAL_RATIO = 0.1
+# 'harmonic_rhythm_model.py'
+HAR_VAL_RATIO = 0.1
 SEGMENT_LENGTH = 32
-SEGMENTS_LENGTH = 2
-RNN_SIZE = 256
-NUM_LAYERS = 1
-BATCH_SIZE = 32
-RHYTHM_EPOCHS = 5
-CHORD_EPOCHS = 20
+HAR_RNN_SIZE = 128
+HAR_NUM_LAYERS = 2
+HAR_BATCH_SIZE = 64
+HAR_EPOCHS = 4
 
-# 'harmonizor.py'参数
-TEMPERATURE = 0
-RHYTHM_DENSITY = 0
+# 'chord_model.py'
+CHO_VAL_RATIO = 0.1
+SEGMENTS_LENGTH = 2
+CHO_RNN_SIZE = 128
+CHO_NUM_LAYERS = 3
+CHO_BATCH_SIZE = 64
+CHO_EPOCHS = 5
+
+# 'harmonizor.py'
+RHYTHM_DENSITY = 0.5
+WATER_MARK = True
+LEADSHEET = True

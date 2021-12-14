@@ -17,14 +17,13 @@ def mul_seg(sequence, idx, segments_length, direction, sep):
 
     segs = []
 
-    # 判定连接方向
     if direction=='left':
 
         for i in range(-segments_length,0):
 
             segs += sequence[idx+i]
 
-            # 添加'分隔符'
+            # Add separator
             if i!=-1:
 
                 segs.append(sep)
@@ -35,7 +34,7 @@ def mul_seg(sequence, idx, segments_length, direction, sep):
 
             segs += sequence[idx+i]
 
-            # 添加'分隔符'
+            # Add separator
             if i!=segments_length:
 
                 segs.append(sep)
@@ -43,20 +42,20 @@ def mul_seg(sequence, idx, segments_length, direction, sep):
     return segs
         
         
-def create_training_data(segments_length=SEGMENTS_LENGTH, corpus_path=CORPUS_PATH,  val_ratio=VAL_RATIO):
+def create_training_data(segments_length=SEGMENTS_LENGTH, corpus_path=CORPUS_PATH,  val_ratio=CHO_VAL_RATIO):
 
-    # 加载语料库
+    # Load corpus
     with open('chord_'+corpus_path, "rb") as filepath:
         corpus = pickle.load(filepath)
 
-    # 训练集的输入和输出
+    # Inputs and targets for the training set
     input_melody_left = []
     input_melody_mid = []
     input_melody_right = []
     input_chord_left = []
     output_chord = []
 
-    # 验证集的输入和输出
+    # Inputs and targets for the validation set
     input_melody_left_val = []
     input_melody_mid_val = []
     input_melody_right_val = []
@@ -66,10 +65,10 @@ def create_training_data(segments_length=SEGMENTS_LENGTH, corpus_path=CORPUS_PAT
     cnt = 0
     np.random.seed(0)
 
-    # 处理语料库中的每一个和弦序列
+    # Process each chord sequence in the corpus
     for idx, chord in enumerate(corpus[1]):
         
-        # 按一定概率随机分配到训练集或验证集
+        # Randomly assigned to the training or validation set with the probability
         if np.random.rand()>val_ratio:
 
             train_or_val = 'train'
@@ -78,20 +77,20 @@ def create_training_data(segments_length=SEGMENTS_LENGTH, corpus_path=CORPUS_PAT
 
             train_or_val = 'val'
 
-        # 加载对应的旋律片段序列
+        # Load the corresponding melody sequence
         melody = corpus[0][idx]
         
-        # 以'131','14'分别表示旋律以及和弦序列的填充符
+        # '131', '14' for melody and chord sequences of paddings respectively
         for i in range(segments_length):
 
             melody.insert(0,[131]*16)
             melody.append([131]*16)
             chord.insert(0,[14]*4)
 
-        # 创建数据对
+        # Create pairs
         for i in range(segments_length, len(chord)):
             
-            # 以'132'和'15'分别表示旋律以及和弦序列的分隔符
+            # '131', '15' for melody and chord sequences of separators respectively
             melody_left = mul_seg(melody,i,segments_length,'left',132)
             melody_mid = melody[i]
             melody_right = mul_seg(melody,i,segments_length,'right',132)[::-1]
@@ -118,11 +117,11 @@ def create_training_data(segments_length=SEGMENTS_LENGTH, corpus_path=CORPUS_PAT
 
     print("Successfully read %d pieces" %(cnt))
     
-    # 定义最大长度
+    # Set maximum length
     melody_segs_length = segments_length*16+segments_length-1
     chord_segs_length = segments_length*4+segments_length-1
 
-    # 补齐输入并独热化输出数据
+    # Padding input and one-hot vectorization of output data
     input_melody_left = pad_sequences(input_melody_left, padding='post', maxlen=melody_segs_length)
     input_melody_mid = pad_sequences(input_melody_mid, padding='post', maxlen=16)
     input_melody_right = pad_sequences(input_melody_right, padding='post', maxlen=melody_segs_length)
@@ -143,11 +142,11 @@ def create_training_data(segments_length=SEGMENTS_LENGTH, corpus_path=CORPUS_PAT
 
 def build_chord_model(segments_length, rnn_size, num_layers, weights_path=None):
 
-    # 定义最大长度
+    # Set maximum length
     melody_segs_length = segments_length*16+segments_length-1
     chord_segs_length = segments_length*4+segments_length-1
 
-    # 创建输入层并进行embedding
+    # Create input layer with embedding
     input_melody_left = Input(shape=(melody_segs_length,), 
                               name='input_melody_left')
     embeded_melody_left = Embedding(input_dim=132,
@@ -180,7 +179,7 @@ def build_chord_model(segments_length, rnn_size, num_layers, weights_path=None):
                                    mask_zero=True,
                                    name='embeded_chord_left')(input_chord_left)
     
-    # 更新变量名
+    # Update variable names
     melody_left = embeded_melody_left
     melody_mid = embeded_melody_mid
     melody_right = embeded_melody_right
@@ -188,10 +187,9 @@ def build_chord_model(segments_length, rnn_size, num_layers, weights_path=None):
 
     return_sequences = True
 
-    # 创建隐藏层 
+    # Creating the hidden layer of the LSTM
     for idx in range(num_layers):
 
-        # 判断当前是否是最后一层
         if idx == num_layers - 1:
 
             return_sequences = False
@@ -212,7 +210,7 @@ def build_chord_model(segments_length, rnn_size, num_layers, weights_path=None):
                           return_sequences=return_sequences,
                           name='chord_left_'+str(idx+1))(chord_left)
 
-    # 合并隐藏层输出
+    # Merge hidden layer output
     merge = concatenate(
                         [
                          melody_left,
@@ -222,13 +220,13 @@ def build_chord_model(segments_length, rnn_size, num_layers, weights_path=None):
                         ]
                        )        
 
-    # 对合并向量进行线性变换
+    # Linear transformation of the merged vector
     merge= Dense(units=rnn_size,
                  activation='relu',
                  name='merge')(merge)
     predictions = BatchNormalization()(merge)
 
-    # 创建输出层
+    # Create output layer
     first = Dense(units=16, 
                   activation="softmax", 
                   name='first')(predictions)
@@ -275,17 +273,16 @@ def build_chord_model(segments_length, rnn_size, num_layers, weights_path=None):
 def train_model(data, 
                 data_val, 
                 segments_length=SEGMENTS_LENGTH, 
-                rnn_size=RNN_SIZE, 
-                num_layers=NUM_LAYERS, 
-                batch_size=BATCH_SIZE, 
-                epochs=CHORD_EPOCHS, 
+                rnn_size=CHO_RNN_SIZE, 
+                num_layers=CHO_NUM_LAYERS, 
+                batch_size=CHO_BATCH_SIZE, 
+                epochs=CHO_EPOCHS, 
                 verbose=2,
                 weights_path='chord_'+WEIGHTS_PATH):
 
-    # 创建和声模型
     model = build_chord_model(segments_length, rnn_size, num_layers)
 
-    # 加载或删除已有权重
+    # Load or remove existing weights
     if os.path.exists(weights_path):
         
         try:
@@ -298,7 +295,7 @@ def train_model(data,
             os.remove(weights_path)
             print("checkpoint deleted")
 
-    # 设定监控指标
+    # Set monitoring indicator
     if len(data_val[0])!=0:
 
         monitor = 'val_loss'
@@ -307,17 +304,16 @@ def train_model(data,
 
         monitor = 'loss'
         
-    # 保存权重
+    # Save weights
     checkpoint = ModelCheckpoint(filepath=weights_path,
                                  monitor=monitor,
                                  verbose=0,
                                  save_best_only=True,
                                  mode='min')
 
-    # 训练模型
     if len(data_val[0])!=0:
 
-        # 加入验证集
+        # With validation set
         history = model.fit(x={'input_melody_left': np.array(data[0]), 
                                 'input_melody_mid': np.array(data[1]), 
                                 'input_melody_right': np.array(data[2]), 
@@ -341,7 +337,7 @@ def train_model(data,
     
     else:
         
-        # 仅包括训练集
+        # Without validation set
         history = model.fit(x={'input_melody_left': np.array(data[0]), 
                                 'input_melody_mid': np.array(data[1]), 
                                 'input_melody_right': np.array(data[2]), 
@@ -360,8 +356,8 @@ def train_model(data,
 
 if __name__ == "__main__":
 
-    # 加载训练集和验证集
+    # Load the training and validation sets
     data, data_val = create_training_data()
     
-    # 训练模型
+    # Train model
     history = train_model(data, data_val)
