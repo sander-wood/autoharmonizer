@@ -21,6 +21,10 @@ music21: 6.7.1\
 PS: Third party libraries can be installed using the `pip install` command.
 
 ## Melody Harmonization
+1.　Store all lead sheets (MIDI or MusicXML) in the `dataset` folder, if you only have a small amount of data yourself, you can keep the original dataset of this system;\
+2.　Run `loader.py`, which will generate `rhythm_corpus.bin` and `chord_corpus.bin`; \
+3.　Run `train.py`, which will generate `rhythm_weights.hdf5` and `chord_weights.hdf5`.\
+\
 1. Put the melodies (MIDI or MusicXML) in the `inputs` folder;
 2. Simply run `harmonizer.py`;
 3. Wait a while and the harmonized melodies will be saved in the `outputs` folder.\
