@@ -25,7 +25,9 @@ PS: Third party libraries can be installed using the `pip install` command.
 2. Simply run `harmonizer.py`;
 3. Wait a while and the harmonized melodies will be saved in the `outputs` folder.
 \
-PS: You can set the parameter RHYTHM_DENSITY ∈ (0, 1) in `config.py` to adjust the density of the generated chord progression. The lower the value of RHYTHM_DENSITY, the fewer chords will be generated, and vice versa.\
+PS: Third party libraries can be installed using the `pip install` command.
+\
+PS: You can set the parameter RHYTHM_DENSITY ∈ (0, 1) in `config.py` to adjust the density of the generated chord progression. The lower the value of RHYTHM_DENSITY, the fewer chords will be generated, and vice versa.
 
 ## Use Your Own Dataset
 1.　Store all lead sheets (MIDI or MusicXML) in the `dataset` folder, if you only have a small amount of data yourself, you can keep the original dataset of this system;\
