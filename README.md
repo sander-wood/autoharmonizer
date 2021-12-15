@@ -10,7 +10,7 @@ Musical discrimination test is available at https://sander-wood.github.io/autoha
 \
 Nottingham Lead Sheet Dataset (NLSD) and Session Lead Sheet Dataset (SLSD) are both in the `dataset` folder.\
 \
-For more information, see our paper: arXiv paper.
+For more information, see our paper: [arXiv paper](https://www.overleaf.com/project/61837c3a1936bf9bea54a14a).
 
 ## Install Dependencies
 Python: 3.7.9\
