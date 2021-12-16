@@ -19,7 +19,7 @@ But we still found some mistakes of this version about 5% of tunes (e.g. mismatc
 Therefore, we manually corrected the MIDI version cleaned by Jukedeck, and all the tunes now are titled while present in the form of the lead sheet.  
   
 The main differences with the cleaned version of Jukedeck are:  
-1.　Save the files as lead sheets (.mxl) instead of .mid;  
+1.　Save these files as lead sheets (.mxl) instead of .mid;  
 2.　Corrected mistakes of the cleaned version of Jekedeck about 5% of tunes;  
 3.　Added the corresponding title for each piece of music.  
   
