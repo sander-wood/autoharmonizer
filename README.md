@@ -1,3 +1,9 @@
+<style>
+table {
+margin: auto;
+}
+</style>
+
 # AutoHarmonizer
 
 ## Melody Harmonization with Controllable Harmonic Rhythm
@@ -57,7 +63,7 @@ In addition, given that Ireland and Britain share a very similar cultural backgr
 We suggest using this dataset for pre-training and later fine-tune on a dataset like Nottingham Lead Sheet Dataset to further improve the performance of deep learning models.
   
 <div align="center">
-  Ashover27 sheet exported in MuseScore3 (left: Jukedeck, right: Nottingham Lead Sheet Dataset)  
+  Comparison of some existing public lead sheetdatasets and the proposed dataset.
 
 </div>  
 
