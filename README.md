@@ -19,6 +19,9 @@ But we still found some mistakes of this version about 5% of tunes (e.g. mismatc
 Therefore, we manually corrected the MIDI version cleaned by Jukedeck, and all the tunes now are titled while present in the form of the lead sheet.  
   
 The main differences with the cleaned version of Jukedeck are:  
+1.　Store all the lead sheets (MIDI or MusicXML) in the `dataset` folder;  
+2.　Run `loader.py`, which will generate `rhythm_corpus.bin` and `chord_corpus.bin`;  
+3.　Run `train.py`, which will generate `rhythm_weights.hdf5` and `chord_weights.hdf5`.  
 1. Save the files as lead sheets (.mxl) instead of .mid;  
 2. Corrected 5% of the mistakes;  
 3. Added the corresponding title for each piece of music.  
