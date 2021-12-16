@@ -18,6 +18,11 @@ But we still found some mistakes of this version about 5% of tunes (e.g. mismatc
   
 Therefore, we manually corrected the MIDI version cleaned by Jukedeck, and all the tunes now are titled while present in the form of the lead sheet.  
   
+The main differences with the cleaned version of Jukedeck are:  
+1. Save the files as lead sheets (.mxl) instead of .mid;  
+2. Corrected 5% of the mistakes;  
+3. Added the corresponding title for each piece of music.  
+  
 Click here to download [Nottingham Lead Sheet Dataset](https://drive.google.com/file/d/1j7MOdTwEASn7wQ7M46NfBUc-ztY5T17K/view?usp=sharing) (Google Drive).  
   
 <div align="center">
