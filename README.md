@@ -6,7 +6,7 @@ This is the source code of AutoHarmonizer, a harmonic rhythm-controllable melody
   
 The input melodies and harmonized samples are in the `inputs` and `outputs` folders respectively.  
   
-Musical discrimination test is available at https://sander-wood.github.io/autoharmonizer.  
+The musical discrimination test is available at https://sander-wood.github.io/autoharmonizer.  
   
 For more information, see our paper: [arXiv paper](https://www.overleaf.com/project/61837c3a1936bf9bea54a14a).  
   
@@ -14,7 +14,7 @@ For more information, see our paper: [arXiv paper](https://www.overleaf.com/proj
 
 The music generation start-up company Jukedeck put some efforts into cleaning the database and released at https://github.com/jukedeck/nottingham-dataset in MIDI format.  
   
-But we still found some mistakes of this version about 5% of tunes (e.g. mismatches, or no harmonies at all).  
+But we still found some mistakes in this version about 5% of tunes (e.g. mismatches, or no harmonies at all).  
   
 Therefore, we manually corrected the MIDI version cleaned by Jukedeck, and all the tunes now are titled while present in the form of the lead sheet.  
   
@@ -39,7 +39,7 @@ We create a lead sheet dataset based on [Session Dataset](https://thesession.org
 3.　We cleaned the converted files and removed the repeat notation by flattening each score to make them more machine-readable;  
 4.　We use AutoHarmonizer to generate the corresponding harmonies for these Irish traditional tunes.  
   
-Each harmonized piece contains melody and corresponding chord progression, and metadata information such as key signature, time signature, title and its genre.  
+Each harmonized piece contains melody and corresponding chord progression, and metadata information such as key signature, time signature, title and genre.  
   
 <div align="center">
   <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture4-1.png width=35% />
@@ -54,7 +54,7 @@ Although the chords are machine-generated, the AutoHarmonizer is closer to human
   
 In addition, given that Ireland and Britain share a very similar cultural background, using the AutoHarmonizer trained on Nottingham Lead Sheet Dataset to produce the chord progressions for the Session Dataset would be more in keeping with its melodic style.  
   
-We suggest using this dataset for pre-training and later fine-tune on a dataset like Nottingham Lead Sheet Dataset to further improve the performance of deep learning models.
+We suggest using this dataset for pre-training and later fine-tuning on a dataset like Nottingham Lead Sheet Dataset to further improve the performance of deep learning models.
   
 Click here to download [Session Lead Sheet Dataset](https://drive.google.com/file/d/1jGDzip0ODImbgMThrqj8_wXVXu2WaAi8/view?usp=sharing) (Google Drive).  
   
@@ -88,6 +88,6 @@ You can set the parameter RHYTHM_DENSITY∈(0, 1) in `config.py` to adjust the d
 2.　Run `loader.py`, which will generate `rhythm_corpus.bin` and `chord_corpus.bin`;  
 3.　Run `train.py`, which will generate `rhythm_weights.hdf5` and `chord_weights.hdf5`.  
   
-After that, you can use `harmonizer.py` to harmonize music that with chord progressions that fit the musical style of the new dataset.   
+After that, you can use `harmonizer.py` to harmonize music with chord progressions that fit the musical style of the new dataset.   
   
 If you need to finetune the parameters, you can do so in `config.py`. It is not recommended to change the parameters in other files.
