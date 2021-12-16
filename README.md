@@ -20,12 +20,9 @@ Here is a sample comparison.
   
 <div align="center">
   <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture2-1.png width=35% />
-    
-  Ashover27 in the Jukedeck version
-</div>
-<div align="center">
   <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-1.png width=35% />
     
+  Ashover27 in the Jukedeck version    
   Ashover27 in the Nottingham Lead Sheet Dataset
 </div>
 
