@@ -22,7 +22,7 @@ Here is a sample comparison.
   
 <div align="center">
   <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture2-1.png width=35% />
-  <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-1.png width=35% />
+  <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-1.png width=35% />  
   Ashover27 sheet exported in MuseScore3 (left: Jukedeck, right: Nottingham Lead Sheet Dataset)
 </div>
 
