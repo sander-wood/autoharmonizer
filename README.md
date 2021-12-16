@@ -22,9 +22,8 @@ Here is a sample comparison.
   
 <div align="center">
   <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture2-1.png width=35% />
-  <em>Ashover27 in the Jukedeck version</em>
   <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-1.png width=35% />
-  <em>Ashover27 in the Nottingham Lead Sheet Dataset</em>
+  Ashover27 sheet exported in MuseScore3 (left: Jukedeck, right: Nottingham Lead Sheet Dataset)
 </div>
 
 ## Install Dependencies
