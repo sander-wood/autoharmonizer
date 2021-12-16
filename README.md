@@ -69,7 +69,7 @@ Click here to download [Session Lead Sheet Dataset](https://drive.google.com/fil
   
 ## Install Dependencies
 Python: 3.7.9  
-keras: 2.3.0  
+Keras: 2.3.0  
 keras-metrics: 1.1.0  
 tensorflow-gpu: 2.2.0  
 music21: 6.7.1  
