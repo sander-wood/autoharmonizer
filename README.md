@@ -59,9 +59,7 @@ We suggest using this dataset for pre-training and later fine-tune on a dataset 
 <div align="center">
   Comparison of some existing public lead sheetdatasets and the proposed dataset.
 
-</div>  
-
-<center>
+<table>
 |  Dataset   | Notes  | Chords  | Bars  | Pieces  |
 | :----: | :----: | :----: | :----: | :----: |
 | Fiddle Tunes | 48,321 | 4,978 | 8,128 | 226 |
@@ -70,8 +68,9 @@ We suggest using this dataset for pre-training and later fine-tune on a dataset 
 | Wikifonia | 932,813 | 330,241 | 496,437 | 6,244 |
 | TheoryTab | 869,052 | 284,936 | 180,488 | 18,167 |
 | Session | **7,783,509** | **1,638,386** | **1,353,370** | **40,925** |
-</center>
+</table>
 
+</div>  
 ## Install Dependencies
 Python: 3.7.9  
 keras: 2.3.0  
