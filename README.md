@@ -12,7 +12,7 @@ For more information, see our paper: [arXiv paper](https://www.overleaf.com/proj
   
 ## Nottingham Lead Sheet Dataset
 
-The music generation start-up company Jukedeck put some efforts into cleaning the database and released at https://github.com/jukedeck/nottingham-dataset in MIDI format.  
+The music generation start-up company Jukedeck put some efforts into cleaning the database and released it at https://github.com/jukedeck/nottingham-dataset in MIDI format.  
   
 But we still found some mistakes in this version about 5% of tunes (e.g. mismatches, or no harmonies at all).  
   
