@@ -15,7 +15,9 @@ For more information, see our paper: [arXiv paper](https://www.overleaf.com/proj
 The music generation start-up company Jukedeck put some efforts into cleaning the database and released at https://github.com/jukedeck/nottingham-dataset in MIDI format, but we still found some mistakes of this version about 5% of tunes (e.g. mismatches, or no harmonies at all).\
 \
 Therefore, we manually corrected the MIDI version cleaned by Jukedeck, and all the tunes now are titled while present in the form of the lead sheet.\
-![avatar](https://github.com/sander-wood/autoharmonizer/blob/homepage/Picture1.png)
+![avatar](https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-1.png)
+![avatar](https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-2.png)
+
 ## Install Dependencies
 Python: 3.7.9\
 Keras: 2.3.0\
