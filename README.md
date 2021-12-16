@@ -55,7 +55,9 @@ Although the chords are machine-generated, the AutoHarmonizer is closer to human
 In addition, given that Ireland and Britain share a very similar cultural background, using the AutoHarmonizer trained on Nottingham Lead Sheet Dataset to produce the chord progressions for the Session Dataset would be more in keeping with its melodic style.  
   
 We suggest using this dataset for pre-training and later fine-tune on a dataset like Nottingham Lead Sheet Dataset to further improve the performance of deep learning models.
-
+  
+Click here to download [Session Lead Sheet Dataset](https://drive.google.com/file/d/1jGDzip0ODImbgMThrqj8_wXVXu2WaAi8/view?usp=sharing) (Google Drive).  
+  
 |  Dataset   | Notes  | Chords  | Bars  | Pieces  |
 | :----: | :----: | :----: | :----: | :----: |
 | Fiddle Tunes | 48,321 | 4,978 | 8,128 | 226 |
