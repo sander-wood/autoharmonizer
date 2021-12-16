@@ -18,7 +18,7 @@ But we still found some mistakes of this version about 5% of tunes (e.g. mismatc
   
 Therefore, we manually corrected the MIDI version cleaned by Jukedeck, and all the tunes now are titled while present in the form of the lead sheet.  
   
-The main differences with the cleaned version of Jukedeck are:  
+The main differences with the cleaned version of Jukedeck are as follows:  
 1.　Save these files as lead sheets (.mxl) instead of .mid;  
 2.　Corrected mistakes of the cleaned version of Jekedeck about 5% of tunes;  
 3.　Added the corresponding title for each piece of music.  
@@ -32,6 +32,23 @@ Click here to download [Nottingham Lead Sheet Dataset](https://drive.google.com/
   Ashover27 sheet exported in MuseScore3 (left: Jukedeck, right: Nottingham Lead Sheet Dataset)
 </div>
   
+## Session Lead Sheet Dataset
+We create a lead sheet dataset based on [Session Dataset](https://thesession.org/), named as Session Lead Sheet Dataset, containing 40,925 tunes with chords. This dataset is collected as follows.  
+1.　We first downloaded all the tunes in ABC format from the [Session Dataset](https://thesession.org/), a community website dedicated to Irish traditional music;  
+2.　We then convert those ABC files to MusicXML with the [music21 toolkit](https://web.mit.edu/music21/doc/moduleReference/index.html);  
+3.　We cleaned the converted files and removed the repeat notation by flattening each score to make them more machine-readable;  
+4.　We use AutoHarmonizer to generate the corresponding harmonies for these Irish traditional tunes.  
+  
+Each harmonized piece contains melody and corresponding chord progression, and metadata information such as key signature, time signature, title and its genre.  
+  
+Session Lead Sheet Dataset can be used but not limited to the following research topics including: 1) harmonic study, 2) ethnomusicological study, 3) melody harmonization and 4) melody generation based on chords.  
+  
+Although the chords are machine-generated, the AutoHarmonizer is closer to human-composed chord progressions than other melody harmonization systems, as it takes into account harmonic rhythms.  
+  
+In addition, given that Ireland and Britain share a very similar cultural background, using the AutoHarmonizer trained on Nottingham Lead Sheet Dataset to produce the chord progressions for the Session Dataset would be more in keeping with its melodic style.  
+  
+We suggest using this dataset for pre-training and later fine-tune on a dataset like Nottingham Lead Sheet Dataset to further improve the performance of deep learning models.
+
 ## Install Dependencies
 Python: 3.7.9  
 keras: 2.3.0  
