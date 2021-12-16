@@ -59,13 +59,13 @@ We suggest using this dataset for pre-training and later fine-tune on a dataset 
 <div align="center">
   Ashover27 sheet exported in MuseScore3 (left: Jukedeck, right: Nottingham Lead Sheet Dataset)  
   |  Dataset   | Notes  | Chords  | Bars  | Pieces  |
-  | :----: | :----: | :----: | :----: | :----: |
-  | Fiddle Tunes | 48,321 | 4,978 | 8,128 | 226 |
-  | Nottingham | 189,215 | 51,342 | 38,821 | 1,034 |
-  | RJ Tunebook | 193,916 | 24,930 | 38,218 | 1,078 |
-  | Wikifonia | 932,813 | 330,241 | 496,437 | 6,244 |
-  | TheoryTab | 869,052 | 284,936 | 180,488 | 18,167 |
-  | Session | **7,783,509** | **1,638,386** | **1,353,370** | **40,925** |
+| :----: | :----: | :----: | :----: | :----: |
+| Fiddle Tunes | 48,321 | 4,978 | 8,128 | 226 |
+| Nottingham | 189,215 | 51,342 | 38,821 | 1,034 |
+| RJ Tunebook | 193,916 | 24,930 | 38,218 | 1,078 |
+| Wikifonia | 932,813 | 330,241 | 496,437 | 6,244 |
+| TheoryTab | 869,052 | 284,936 | 180,488 | 18,167 |
+| Session | **7,783,509** | **1,638,386** | **1,353,370** | **40,925** |
 </div>  
 
 ## Install Dependencies
