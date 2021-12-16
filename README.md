@@ -16,11 +16,14 @@ The music generation start-up company Jukedeck put some efforts into cleaning th
 \
 Therefore, we manually corrected the MIDI version cleaned by Jukedeck, and all the tunes now are titled while present in the form of the lead sheet.\
 \
+Here is a sample comparison.\
 <div align="center">
-<img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture2-1.png width=50% />
+  <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture2-1.png width=50% />
+  Ashover27 in the Jukedeck version
 </div>
 <div align="center">
-<img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-1.png width=50% />
+  <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-1.png width=50% />
+  Ashover27 in the Nottingham Lead Sheet Dataset
 </div>
 
 ## Install Dependencies
