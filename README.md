@@ -16,7 +16,7 @@ The music generation start-up company Jukedeck put some efforts into cleaning th
 \
 Therefore, we manually corrected the MIDI version cleaned by Jukedeck, and all the tunes now are titled while present in the form of the lead sheet.\
 ![avatar](https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-1.png)
-![avatar](https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-2.png)
+![avatar](https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture2-1.png)
 
 ## Install Dependencies
 Python: 3.7.9\
