@@ -22,10 +22,9 @@ Here is a sample comparison.
   
 <div align="center">
   <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture2-1.png width=35% />
+  <em>Ashover27 in the Jukedeck version</em>
   <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-1.png width=35% />
-    
-  Ashover27 in the Jukedeck version    
-  Ashover27 in the Nottingham Lead Sheet Dataset
+  <em>Ashover27 in the Nottingham Lead Sheet Dataset</em>
 </div>
 
 ## Install Dependencies
