@@ -1,9 +1,3 @@
-<style>
-table {
-margin: auto;
-}
-</style>
-
 # AutoHarmonizer
 
 ## Melody Harmonization with Controllable Harmonic Rhythm
