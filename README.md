@@ -27,7 +27,9 @@ Here is a sample comparison.
     
   Ashover27 sheet exported in MuseScore3 (left: Jukedeck, right: Nottingham Lead Sheet Dataset)
 </div>
-
+  
+Click here to download [Nottingham Lead Sheet Dataset](https://drive.google.com/file/d/1j7MOdTwEASn7wQ7M46NfBUc-ztY5T17K/view?usp=sharing) (Google Drive).  
+  
 ## Install Dependencies
 Python: 3.7.9  
 Keras: 2.3.0  
