@@ -18,6 +18,8 @@ But we still found some mistakes of this version about 5% of tunes (e.g. mismatc
   
 Therefore, we manually corrected the MIDI version cleaned by Jukedeck, and all the tunes now are titled while present in the form of the lead sheet.  
   
+Click here to download [Nottingham Lead Sheet Dataset](https://drive.google.com/file/d/1j7MOdTwEASn7wQ7M46NfBUc-ztY5T17K/view?usp=sharing) (Google Drive).  
+  
 Here is a sample comparison.  
   
   
@@ -27,8 +29,6 @@ Here is a sample comparison.
     
   Ashover27 sheet exported in MuseScore3 (left: Jukedeck, right: Nottingham Lead Sheet Dataset)
 </div>
-  
-Click here to download [Nottingham Lead Sheet Dataset](https://drive.google.com/file/d/1j7MOdTwEASn7wQ7M46NfBUc-ztY5T17K/view?usp=sharing) (Google Drive).  
   
 ## Install Dependencies
 Python: 3.7.9  
