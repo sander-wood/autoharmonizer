@@ -34,7 +34,7 @@ Click here to download [Nottingham Lead Sheet Dataset](https://drive.google.com/
   
 ## Install Dependencies
 Python: 3.7.9  
-Keras: 2.3.0  
+keras: 2.3.0  
 keras-metrics: 1.1.0  
 tensorflow-gpu: 2.2.0  
 music21: 6.7.1  
