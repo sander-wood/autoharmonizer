@@ -22,9 +22,9 @@ The main differences with the cleaned version of Jukedeck are:
 1.　Store all the lead sheets (MIDI or MusicXML) in the `dataset` folder;  
 2.　Run `loader.py`, which will generate `rhythm_corpus.bin` and `chord_corpus.bin`;  
 3.　Run `train.py`, which will generate `rhythm_weights.hdf5` and `chord_weights.hdf5`.  
-1. Save the files as lead sheets (.mxl) instead of .mid;  
-2. Corrected 5% of the mistakes;  
-3. Added the corresponding title for each piece of music.  
+1.  Save the files as lead sheets (.mxl) instead of .mid;  
+2.  Corrected 5% of the mistakes;  
+3.  Added the corresponding title for each piece of music.  
   
 Click here to download [Nottingham Lead Sheet Dataset](https://drive.google.com/file/d/1j7MOdTwEASn7wQ7M46NfBUc-ztY5T17K/view?usp=sharing) (Google Drive).  
   
