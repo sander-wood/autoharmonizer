@@ -2,14 +2,14 @@
 
 ## Melody Harmonization with Controllable Harmonic Rhythm
 
-This is the source code of AutoHarmonizer, a harmonic rhythm-controllable melody harmonization system, trained/validated on Nottingham Lead Sheet Dataset.\
-\
-The input melodies and harmonized samples are in the `inputs` and `outputs` folders respectively.\
-\
-Musical discrimination test is available at https://sander-wood.github.io/autoharmonizer. \
-\
-For more information, see our paper: [arXiv paper](https://www.overleaf.com/project/61837c3a1936bf9bea54a14a).
-
+This is the source code of AutoHarmonizer, a harmonic rhythm-controllable melody harmonization system, trained/validated on Nottingham Lead Sheet Dataset.  
+  
+The input melodies and harmonized samples are in the `inputs` and `outputs` folders respectively.  
+  
+Musical discrimination test is available at https://sander-wood.github.io/autoharmonizer.  
+  
+For more information, see our paper: [arXiv paper](https://www.overleaf.com/project/61837c3a1936bf9bea54a14a).  
+  
 ## Nottingham Lead Sheet Dataset
 
 The music generation start-up company Jukedeck put some efforts into cleaning the database and released at https://github.com/jukedeck/nottingham-dataset in MIDI format, but we still found some mistakes of this version about 5% of tunes (e.g. mismatches, or no harmonies at all).\
