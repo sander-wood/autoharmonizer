@@ -20,6 +20,7 @@ Therefore, we manually corrected the MIDI version cleaned by Jukedeck, and all t
   
 Here is a sample comparison.  
   
+  
 <div align="center">
   <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture2-1.png width=35% />
   <img src=https://github.com/sander-wood/autoharmonizer/blob/homepage/readme/Picture1-1.png width=35% />
