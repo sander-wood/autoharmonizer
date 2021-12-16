@@ -56,8 +56,6 @@ In addition, given that Ireland and Britain share a very similar cultural backgr
   
 We suggest using this dataset for pre-training and later fine-tune on a dataset like Nottingham Lead Sheet Dataset to further improve the performance of deep learning models.
 
-Comparison of some existing public lead sheetdatasets and the proposed dataset.
-
 |  Dataset   | Notes  | Chords  | Bars  | Pieces  |
 | :----: | :----: | :----: | :----: | :----: |
 | Fiddle Tunes | 48,321 | 4,978 | 8,128 | 226 |
