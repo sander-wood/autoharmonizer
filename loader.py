@@ -113,15 +113,15 @@ def beat_seq(ts):
 
     
     # Check if the numerator is divisible by 3 or 2
-    second = 0 
+    medium = 0 
 
     if (ts.numerator%3)==0:
 
-        second = 3
+        medium = 3
 
     elif (ts.numerator%2)==0:
 
-        second = 2
+        medium = 2
 
     for idx in range(len(beat_sequence)):
 
@@ -131,8 +131,8 @@ def beat_seq(ts):
             beat_sequence[idx] += 1
         
         # Mark medium-weight beat (at every second or third beat)
-        if (second==3 and idx%((3*beatDuration/0.25))==0) or \
-            (second==2 and idx%((2*beatDuration/0.25))==0):
+        if (medium==3 and idx%((3*beatDuration/0.25))==0) or \
+            (medium==2 and idx%((2*beatDuration/0.25))==0):
 
             beat_sequence[idx] += 1
             
@@ -381,16 +381,9 @@ def music2txt(score, filename, fromDataset):
 
         except:
 
-            try:
-            
-                melody_part = score.parts[0]
-                chord_part = score.parts[1]
-            
-            except:
-
-                # Read error
-                print("Warning: Failed to convert \"%s\"" %filename)
-                return None
+            # Read error
+            print("Warning: Failed to convert \"%s\"" %filename)
+            return None
 
         # Read melody and chord data
         melody_txt, beat_txt, ts_seq = melody2txt(melody_part)
