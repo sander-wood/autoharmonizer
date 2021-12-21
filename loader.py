@@ -111,7 +111,6 @@ def beat_seq(ts):
     beat_sequence = [0]*beatCount*int(beatDuration/0.25)
     beat_sequence[0] += 1
 
-    
     # Check if the numerator is divisible by 3 or 2
     medium = 0 
 

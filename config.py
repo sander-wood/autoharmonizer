@@ -6,7 +6,7 @@ INPUTS_PATH = "inputs"
 OUTPUTS_PATH = "outputs"
 
 # 'loader.py'
-EXTENSION = ['.musicxml', '.xml', '.mxl', '.midi', '.mid']
+EXTENSION = ['.musicxml', '.xml', '.mxl']
 
 # 'harmonic_rhythm_model.py'
 HAR_VAL_RATIO = 0.1
