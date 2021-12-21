@@ -9,7 +9,7 @@ Symbolic music datasets are important for both music information retrieval and m
 
 This dataset is collected as follows. We first download all the tunes in ABC format from the Session, a community website dedicated to Irish traditional music. We then convert those ABC files to MusicXML with the music21 toolkit. However, the conversion is not entirely accurate (e.g., extra rests are added at the end of pickup bars). Therefore, we clean the converted files and remove the repeat notation by flattening each score to make them more machine-readable. Finally, we use AutoHarmonizer (d=0.5) to generate the corresponding harmonies for these Irish traditional tunes. Each harmonized piece contains melody and corresponding chord progression, and metadata information such as key signature, time signature, title and genre.
 
-Table 3: Comparison of some existing public lead sheetdatasets and the proposed dataset.  
+Table 3: Comparison of some existing public lead sheetdatasets and the proposed dataset.
 <br>
 <center><img src="figs/tbl3.jpg" alt="table3" style="zoom:50%"></center>
 <br>
