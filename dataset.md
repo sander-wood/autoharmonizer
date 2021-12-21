@@ -3,11 +3,11 @@ layout: default
 title: Dataset
 ---
 
-# Dataset
+# Dataset Harmonized by AutoHarmonizer
 
 Symbolic music datasets are important for both music information retrieval and music generation. However, there is a lack of large-scale lead sheet symbolic music datasets. Therefore, we create a lead sheet dataset based on Session Dataset, named as the Session Lead Sheet Dataset (SLSD), containing 40,925 tunes with chords. 
 
-This dataset is collected as follows. We first download all the tunes in ABC format from the Session, a community website dedicated to Irish traditional music. We then convert those ABC files to MusicXML with the music21 toolkit. However, the conversion is not entirely precise (e.g., extra rests are added at the end of pickup bars). Therefore, we clean the converted files and remove the repeat notation by flattening each score to make them more machine-readable. Finally, we use AutoHarmonizer (d=0.5) to generate the corresponding harmonies for these Irish traditional tunes. Each harmonized piece contains melody and corresponding chord progression, and metadata information such as key signature, time signature, title and genre.
+This dataset is collected as follows. We first download all the tunes in ABC format from the Session, a community website dedicated to Irish traditional music. We then convert those ABC files to MusicXML with the music21 toolkit. However, the conversion is not entirely accurate (e.g., extra rests are added at the end of pickup bars). Therefore, we clean the converted files and remove the repeat notation by flattening each score to make them more machine-readable. Finally, we use AutoHarmonizer (d=0.5) to generate the corresponding harmonies for these Irish traditional tunes. Each harmonized piece contains melody and corresponding chord progression, and metadata information such as key signature, time signature, title and genre.
 
 <center>Table 3: Comparison of some existing public lead sheetdatasets and the proposed dataset.</center>
 <center><img src="figs/tbl3.jpg" alt="table3"></center>
