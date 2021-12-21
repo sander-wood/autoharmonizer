@@ -11,14 +11,14 @@ This dataset is collected as follows. We first download all the tunes in ABC for
 
 Table 3: Comparison of some existing public lead sheetdatasets and the proposed dataset.
 <br>
-<center><img src="figs/tbl3.jpg" alt="table3" style="zoom:50%"></center>
+<center><img src="figs/tbl3.jpg" alt="table3" style="zoom:25%"></center>
 <br>
 
 To the best of our knowledge, SLSD is the largest lead sheet MusicXML dataset so far. Table 3 shows the number of notes, chords, bars and pieces of different datasets. In addition, as we cannot read the original TTD directly, we use its MIDI version for statistical information other than chords (the MIDI version does not contain chords), which is instead obtained by counting the number of occurrences of the keyword "<chord>" in those XML files. Therefore, the statistical results in this dataset are for information purposes only and are not guaranteed to be accurate.
 
 Table 4: The results comparison of NLSD and SLSD in various metrics.
 <br>
-<center><img src="figs/tbl4.jpg" alt="table4" style="zoom:50%"></center>
+<center><img src="figs/tbl4.jpg" alt="table4" style="zoom:25%"></center>
 <br>
 
 The SLSD can be used but not limited to the following research topics including: 1) harmonic study, 2) ethnomusicological study, 3) melody harmonization and 4) melody generation based on chords. Although the chords are machine-generated, the AutoHarmonizer is closer to human-composed chord progressions than other melody harmonization systems, as it takes into account harmonic rhythms. In addition, given that Ireland and Britain share a very similar cultural background, using the AutoHarmonizer trained on NLSD to produce the chord progressions for the Session Dataset would be more in keeping with its melodic style. For intuitive comparison, Table 4 gives the results of NLSD and SLSD in each metric. We suggest using this dataset for pre-training and later fine-tuning on a dataset like NLSD to further improve the performance of deep learning models.
