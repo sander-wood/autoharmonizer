@@ -13,8 +13,6 @@ title: Home
     });
 </script>
 
-# Abstract
-
 Melody harmonization, namely generating a chord progression for a user-given melody, remains a challenging task to this day. Although previous neural network-based systems can effectively generate an appropriate chord progression for a melody, few studies focus on controllable melody harmonization, and none of them can generate flexible harmonic rhythms. To achieve harmonic rhythm-controllable melody harmonization, we propose AutoHarmonizer, a neural network-based melody harmonization system that can generate denser or sparser chord progressions with the use of a new sampling method for controllable generation proposed in this paper. This system mainly consists of two parts: a harmonic rhythm model provides coarse-grained chord onset information, while a chord model generates specific pitches for chords based on the given melody and the corresponding harmonic rhythm sequence previously generated. To evaluate the performance of AutoHarmonizer, we use nine metrics to compare the chord progressions from humans, the system proposed in this paper and the baseline. Experimental results show that AutoHarmonizer not only generates harmonic rhythms comparable to the human level, but generates chords with overall better quality than baseline at different settings. In addition, we use AutoHarmonizer to harmonize the Session Dataset (which were originally chordless), and ended with 40,925 traditional Irish folk songs with harmonies, named the Session Lead Sheet Dataset, which is the largest lead sheet dataset to date.
 
 <br>
