@@ -22,7 +22,7 @@ The encoding method we use is shown in Fig. 3. Each piece of music is encoded in
 <br>
 <center><img src="figs/fig3.png" alt="fig3" style="zoom:80%"></center>
 <br>
-<center>Figure 3: A two-bar sample of a melody, beat, rhythm (chord) and pitch (chord) representation. For simplicity, the time resolution in this example is set to eighth notes.</center>
+Figure 3: A two-bar sample of a melody, beat, rhythm (chord) and pitch (chord) representation. For simplicity, the time resolution in this example is set to eighth notes.
 <br>
 
 **Melody Sequence**: we use 131-dimensional one-hot vectors representing melody, with a time resolution of sixteenth notes. The first 128 dimensions correspond to the 128 different pitches in MIDI. The 129th dimension represents rests, while the 130th dimension represents holds. Finally, the 131st dimension is a special token (for the chord model) used to separate two different melody segments.
@@ -96,7 +96,7 @@ where $p_h$ and $p_h^\*$ are the original and the new probability of the holding
 <br>
 <center><img src="figs/fig7.png" alt="fig7" style="zoom:60%"></center>
 <br>
-<center>Figure 7: Graphic representation of how density sampling changes the probability of the specified token.</center>
+Figure 7: Graphic representation of how density sampling changes the probability of the specified token.
 <br>
 
 As this specified token is the holding token in this implementation, $d$ can be used to control the sparsity of the chord progression. Furthermore, this method is not limited to controlling rhythm density. For example, in a music generation task, if we know which token represents the tonic, we can use density sampling to control the probability of the tonic token and achieve a controllable generation of tonality. More generally, density sampling can be applied to any language model for controllable generation based on modifying the probability of a specified token.
