@@ -1,0 +1,4 @@
+theme: jekyll-theme-minimal
+title: AutoHarmonizer
+description: Automatic melody harmonization
+markdown: kramdown
