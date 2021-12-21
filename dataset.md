@@ -9,7 +9,7 @@ Symbolic music datasets are important for both music information retrieval and m
 
 This dataset is collected as follows. We first download all the tunes in ABC format from the Session, a community website dedicated to Irish traditional music. We then convert those ABC files to MusicXML with the music21 toolkit. However, the conversion is not entirely accurate (e.g., extra rests are added at the end of pickup bars). Therefore, we clean the converted files and remove the repeat notation by flattening each score to make them more machine-readable. Finally, we use AutoHarmonizer (d=0.5) to generate the corresponding harmonies for these Irish traditional tunes. Each harmonized piece contains melody and corresponding chord progression, and metadata information such as key signature, time signature, title and genre.
 
-Table 3: Comparison of some existing public lead sheetdatasets and the proposed dataset.
+Table 3: Comparison of some existing public lead sheetdatasets and the proposed dataset.  
 <br>
 <center><img src="figs/tbl3.jpg" alt="table3" style="zoom:50%"></center>
 <br>
@@ -17,7 +17,7 @@ Table 3: Comparison of some existing public lead sheetdatasets and the proposed 
 To the best of our knowledge, SLSD is the largest lead sheet MusicXML dataset so far. Table 3 shows the number of notes, chords, bars and pieces of different datasets. In addition, as we cannot read the original TTD directly, we use its MIDI version for statistical information other than chords (the MIDI version does not contain chords), which is instead obtained by counting the number of occurrences of the keyword "<chord>" in those XML files. Therefore, the statistical results in this dataset are for information purposes only and are not guaranteed to be accurate.
 
 <center>Table 4: The results comparison of NLSD and SLSD in various metrics.</center>
-<br>
+  
 <center><img src="figs/tbl4.jpg" alt="table4" style="zoom:50%"></center>
 <br>
 
