@@ -13,8 +13,6 @@ title: Methodology
     });
 </script>
 
-# Methodology
-
 ## Encoding Method
 
 The encoding method we use is shown in Fig. 3. Each piece of music is encoded into four sequences as follows.
