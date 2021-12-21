@@ -15,7 +15,7 @@ This dataset is collected as follows. We first download all the tunes in ABC for
 
 To the best of our knowledge, SLSD is the largest lead sheet MusicXML dataset so far. Table 3 shows the number of notes, chords, bars and pieces of different datasets. In addition, as we cannot read the original TTD directly, we use its MIDI version for statistical information other than chords (the MIDI version does not contain chords), which is instead obtained by counting the number of occurrences of the keyword "<chord>" in those XML files. Therefore, the statistical results in this dataset are for information purposes only and are not guaranteed to be accurate.
 
-<center>Table 4: The results comparison ofNLSDandSLSDinvarious metrics.</center>
+<center>Table 4: The results comparison of NLSD and SLSD in various metrics.</center>
 <center><img src="figs/tbl4.jpg" alt="table4"></center>
 <br>
 
