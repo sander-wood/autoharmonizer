@@ -8,7 +8,7 @@ The input melodies and harmonized samples are in the `inputs` and `outputs` fold
   
 The musical discrimination test is available at https://sander-wood.github.io/autoharmonizer.  
   
-For more information, see our paper: [arXiv paper](https://www.overleaf.com/project/61837c3a1936bf9bea54a14a).  
+For more information, see our paper: [arXiv paper](https://arxiv.org/abs/2112.11122).  
   
 ## Nottingham Lead Sheet Dataset
 
