@@ -273,7 +273,7 @@ def txt2music(txt, gap, meta):
                     # If is note
                     if pre_element<129:
 
-                        new_note = note.Note(element-1+corrected_gap)
+                        new_note = note.Note(pre_element-1+corrected_gap)
 
                     # If is rest
                     elif pre_element==129:
@@ -399,7 +399,7 @@ def export_music(melody_part, chord_data, gap_data, meta_data, filename, output_
         
         try:
 
-            # Export as watermark
+            # Export as leadsheet
             score = score_converter(melody_part, chord_part)
             score = watermark(score, filename.split('.')[-2])
             score.write('mxl', fp=output_path+'/'+filename.split('.')[-2]+'.mxl')
