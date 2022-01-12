@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Methodology
+title: Analyses
 ---
 
 <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
@@ -13,88 +13,16 @@ title: Methodology
     });
 </script>
 
-## Encoding Method
-
-The encoding method we use is shown in Fig. 3. Each piece of music is encoded into four sequences as follows.
+从整体结构来看，此谱例共33小节，调性为D大调，曲式结构为单二部曲式，其前后乐段均有反复，1至16小节为A乐段，17-32小节为B乐段（弱起为0小节），A、B乐段均为方整型乐段，A为平行乐段，B为对比乐段，曲式结构图如下：
 
 <br>
-<center><img src="figs/fig3.png" alt="fig3" style="zoom:80%"></center>
-<br>
-Figure 3: A two-bar sample of a melody, beat, rhythm (chord) and pitch (chord) representation. For simplicity, the time resolution in this example is set to eighth notes.
+<center><img src="figs/analyse.png" alt="/analyse" style="zoom:80%"></center>
 <br>
 
-**Melody Sequence**: we use 131-dimensional one-hot vectors representing melody, with a time resolution of sixteenth notes. The first 128 dimensions correspond to the 128 different pitches in MIDI. The 129th dimension represents rests, while the 130th dimension represents holds. Finally, the 131st dimension is a special token (for the chord model) used to separate two different melody segments.
+**[Rhythm Density = 0.1](pdf/outputs-0.1/jigs51.pdf)**: 此例中，A乐段中第一乐句和声进行为主到下属，第二乐句和声则为主持续；B乐段中第一乐句和声进行为T-DVII-D，以主到属功能进行为主，第二乐句与A段第二乐句一样，同为主持续。就整体的和声进行而言，此例和声进行极为稳定，全曲以主、下属、属功能和声为主；从谱例结构上看，和声进行节奏过于缓慢，缺乏动力，尤其A、B乐段的第二乐句均采用主持续，虽然起到强调和巩固调性的作用，但和声没有进行感；就和声进行的编写而言，其和声进行除导和弦外均使用正三和弦，属于强进行，缺乏一定的过渡感和连贯感，乐段终止处因主持续也缺乏一定的动力，显得较为枯燥。
 
-**Beat Sequence**: according to the current time signature, we encode the beat information into 4-dimensional one-hot vectors, which correspond to four-beat classes: non-beat, weak, medium-weight and strong beat.
+**[Rhythm Density = 0.5](pdf/outputs-0.5/jigs51.pdf)**: 此例中，A乐段第一乐句和声进行使用正三和弦，和声进行感强烈，第二乐句和声进行为主属进行，乐段停留在完满终止上。B乐段第一乐句和声进行为T-DVII-D7，和声进行以主属功能进行为主，使用属七和弦让和声的整体走向更加平滑连贯。从整体的和声进行来看，此例和声进行稳定，使用七和弦极少，全曲以主、下属、属功能的和声进行为主；从和声进行的节奏来看，A乐段平均每三拍（八分音符为一拍），即半小节切换一次和弦，B乐段平均每小节进行一次和声的进行，和声进行的节奏较为规整适中；从和声的编写角度看，其和声进行主要使用强进行的三和弦，但B段加入的导和弦和属七和弦，使整体进行稍变平缓，增加了一定的连贯性，乐段的终止也不再是枯燥的主持续，而是属功能到主功能的终止进行。
 
-**Harmonic Rhythm Sequence**: the sequence uses one-hot vectors with 3-dimension to represent three different chord's rhythmic states: the rest state, the onset state and the holding state.
+**[Rhythm Density = 0.9](pdf/outputs-0.9/jigs51.pdf)**: 此例中，A乐段第一乐句和声进行使用正三和弦，和声进行感强烈，第二乐句和声进行为主属进行，乐段停留在完满终止上。B乐段第一乐句和声进行为T-DVII-II-D，和声进行时不局限于使用正三和弦，第二乐句则以使用正三和弦进行为主。从整体的和声进行来看，此例和声进行主要使用正三和弦，但B段中使用如二级、七级等副三和弦，此类弱进行使整体使用正三和弦的和声进行更加平滑；从和声进行的节奏角度看，整体平均每三拍（八分音符为一拍），即半小时切换一次和弦，包括在乐段终止处和乐句起始的弱起处，在A段中尤为明显，尽管整体上和声进行的节奏平均但显得过快，且在B段第一乐句中其前两小节和声虽为主持续，但也会按照每半小节一次的和声节奏进行编写，这种情况下和声进行就显得较为笨重且枯燥，浪费了节奏提供的前进感，缺乏动力；从和声的编写角度看，在整体使用正三和弦的强进行的同时，加入了弱进行的副三和弦的使用，其和声进行还是较为连贯且过渡平稳的。
 
-**Chord Sequence**: each chord is represented by four 14-dimensional one-hot vectors: the first one-hot vector represents the name of the bass note, the second (third and fourth) represents the number of semitone intervals between the second (third and fourth) note and the bass note. The first 12 dimensions of each one-hot vector represent 12 different types of pitch within an octave, the 13th dimension represents a rest, and the 14th dimension is a special token separating two different chords. When the 13th or 14th dimension of the first vector is activated, the remaining three vectors will be identical to it. For chords containing more than 4 notes, we only encode the first 4 notes in ascending order of pitch.
-
-We find that some melody generation models use similar representations. However, they differ from our representation in that: 1) they represent each chord as a single multi-hot vector, whereas we treat it as four one-hot vectors to predict pitch information more accurately, 2) the rhythm sequence in this paper encodes the rhythm of the chord (i.e. harmonic rhythm) rather than the melody one, and finally 3) their representations do not take into account the importance of time signatures, therefore only supports the most common one (i.e. 4/4).
-
-## Harmonic Rhythm Model
-
-Previous models of melody harmonization always generate chords at a fixed time interval. The harmonic rhythm is not only related to the development of the melody, but depends on the current time signature. Therefore, we proposed a harmonic rhythm model that provides the harmonic rhythmic information of chords while considering time signatures.
-
-As shown in Fig. 4, the harmonic rhythm model mainly consists of three components: a melody encoder, a beat encoder, and a harmonic rhythm decoder. The melody encoder and beat encoder are implemented using Bi-LSTM, and the harmonic rhythm decoder is implemented using LSTM.
-
-<br>
-<center><img src="figs/fig4.png" alt="fig4" style="zoom:60%"></center>
-<br>
-<center>Figure 4: The structure of the harmonic rhythm model</center>
-<br>
-
-Given a melody sequence $m_{1:T}=\{m_{1},m_{2},...m_{T}\}$ of length $T$ and a corresponding beat sequence $b_{1:T}=\{b_{1},b_{2},...b_{T}\}$, this model can generate a harmonic rhythm sequence $r_{1:T}=\{r_{1},r_{2},...r_{T}\}$. When at time step $t\in\{1,2,...,T\}$, it generates the current harmonic rhythm token $r_{t}$, from $m_{1:T}$, $b_{1:T}$, and the previously generated $r_{1:t-1}$:
-
-$$r_{t}=\mathcal M_R(m_{1:T},b_{1:T},r_{1:t-1},\theta_{R}),\tag{1}$$
-
-where $\mathcal M_R$ denotes the harmonic rhythm model and $\theta_{R}$ is its parameter. Since the harmonic rhythm model can refer to melody information $m_{t+1:T}$ and beat information $b_{t+1:T}$ after time step $t$, a longer-term choice is made when generating $r_{t}$. This approach is also consistent with the compositional approach of most composers, just as they usually rely on subsequent melodies as well as time signatures to decide how to arrange the current chord.
-
-## Chord Model
-
-How to represent chords is one of the challenges in melody harmonization. A common approach is to predefine the types of chords. However, it has three disadvantages: 1) it is difficult to cover all possible chords, 2) it cannot generate chords that are not predefined, and 3) it is prone to imbalanced classification.
-
-To solve these problems, we encode each chord $c_i$ as four one-hot vectors $c_i^{1st}$,$c_i^{2nd}$,$c_i^{3rd}$ and $c_i^{4th}$ and ask the chord model to predict the four vectors of the chord $c_i$: the first vector is used to determine the bass of the chord, while the last three vectors are used to determine the structure of the chord. Thus, the model does not need to predefine the types of chords. Moreover, it can generate chords that do not present in the training set.
-
-The structure of the chord model is given in Fig. 5. This model mainly consists of two components, namely the melody segment encoder and the chord decoder. The purpose of this model is to generate a chord sequence $c_{1:L}=\{c_{1},c_{2},...c_{L}\}$ of length $L$ based on a given melody segment sequence $M_{1:L}=\{M_{1},M_{2},...M_{L}\}$.
-
-<br>
-<center><img src="figs/fig5.png" alt="fig5" style="zoom:60%"></center>
-<br>
-<center>Figure 5: The structure of the chord model</center>
-<br>
-
-As shown in Fig. 6, we cut the melody into small segments according to the duration of each chord. Furthermore, we need to make sure that these segments are of equal length to be used as input. Usually, a chord has a duration of up to a whole note, so melodies that are longer than a whole note are truncated, and those that are shorter than a whole note are filled in with padding tokens. Finally, we concatenate these segments by inserting separators (the 131st dimension of the melody vector) between them.
-
-<br>
-<center><img src="figs/fig6.png" alt="fig6"></center>
-<br>
-<center>Figure 6: A segmentation example of a two-bar melody</center>
-<br>
-
-When at time step $l\in\{1,2,...,L\}$, the chord model generates four chord vectors $c_{l}^{1st}$,$c_{l}^{2nd}$,$c_{l}^{3rd}$ and $c_{l}^{4th}$ of the current chord based on $M_{1:L}$ and the previously generated chords $c_{1:l-1}$:
-
-$$c_{l}^{n}=\mathcal M_P(M_{1:L},c_{1:l-1},\theta_{P}),\tag{2}$$
-
-where $\mathcal M_P$ denotes the chord model, $\theta_{P}$ is its parameter and $n\in\{1,2,3,4\}$ is the index of the chord vector. By combining these four outputs for time step $l$, we can get the chord $c_{l}$ at time step $l$.
-
-In addition, unlike the harmonic rhythm model, the chord model has four outputs, thus it also has four corresponding loss values. Since modifying any note in the chord will change the nature of it, we do not set weights for the four loss values.
-
-## Density Sampling
-
-In general, modern language models require not only a lot of efforts from researchers to design a structure for controllable generation, but a large amount of annotated data for training. However, in certain generation tasks, some of the properties of the generated sequences are strongly correlated with specific tokens. For example, the holding token is highly correlated with the rhythmic property of music. Therefore, we can achieve controllable generation by adjusting how often they appear in a sequence. Not only is it easy to introduce prior knowledge into the sampling process, but there is no need to redesign the structure or retrain the model with annotated data. 
-
-To achieve the harmonic rhythm-controllable melody harmonization task, we use a tangent function according to the parameter density $d\in$(0,1), to modify the log probability of the holding token: the lower the value of $d$, the fewer chords will be generated, and vice versa. The basic idea of this method is to increase or decrease the probability of a given token by the given $d$, which can be formulated as follows:
-
-$$p_{h}^{*}=p_{h}^{tan(\frac{\pi d}{2})},{\quad}{\,}p_{i}^{*}=(p_{h}-p_{h}^{*}) \cdot \frac{p_{i}}{\sum p_{\backslash h}}+p_{i},\tag{3}$$
-
-where $p_h$ and $p_h^\*$ are the original and the new probability of the holding token, while $p_{i}$ and $p_{i}^{*}$ are the original and the new probabilities of non-holding tokens ($i\in \backslash h$). The first step in Eq. 3 is to change the probability of the holding token, and the second step is to ensure that the sum of the probabilities of all tokens is equal to 1. As shown in Fig. 7, when $d<0.5$, the probability of the holding token is increased, and when $d>0.5$, the probability of the holding token is decreased. Particularly, when $d=0.5$, the probabilities of all tokens do not change.
-
-<br>
-<center><img src="figs/fig7.png" alt="fig7" style="zoom:60%"></center>
-<br>
-Figure 7: Graphic representation of how density sampling changes the probability of the specified token.
-<br>
-
-As this specified token is the holding token in this implementation, $d$ can be used to control the sparsity of the chord progression. Furthermore, this method is not limited to controlling rhythm density. For example, in a music generation task, if we know which token represents the tonic, we can use density sampling to control the probability of the tonic token and achieve a controllable generation of tonality. More generally, density sampling can be applied to any language model for controllable generation based on modifying the probability of a specified token.
+**[Ground Truth](pdf/val/jigs51.pdf)**: 此例中，A乐段第一乐句和声使用正三和弦，功能上主要为主到属功能的进行，动力感很强，但因使用属七和弦，增加了其进行的连贯感，第二乐句和声进行与第一乐句类似，终止为收拢性的完满终止。B乐段第一乐句和声进行为T-DVII，第二乐句和声进行从主到下属进行再由属到主进行构成。从整体的和声进行来看，此例和声整体趋于属主功能的进行，利用下属功能和声过渡增加连贯性，或产生色彩上的对比，因为大量正三和弦的使用，整体和声进行的动力感很强，也因为七和弦的加入，为这种动力感提供了缓冲；从和声进行的节奏角度来看，A乐段的和声节奏为平均每三拍（八分音符为一拍），即半小节切换一次，但在乐段终止处因保证终止式的稳定感则整小节停留在主和弦上，B乐段第一乐句和声进行节奏较缓，每小节切换一次，第二乐句则和A段一样每半小节切换一次，但同样会在终止处平稳停留在主和弦上，这样的进行节奏适中且富有动力；从和声的编写角度来看，此例整体的和声进行为主到属功能进行，但很好地利用了下属功能进行做衔接对比，很好地使用了属七和弦相较于属功能三和弦的中和感，B乐段中更是使用了同主音自然小调的属和弦，和大调中主、属功能的大三和弦形成了色彩上的明显对比，给和声进行增加了一定的色彩饱和感。
