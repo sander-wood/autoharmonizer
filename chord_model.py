@@ -90,7 +90,7 @@ def create_training_data(segments_length=SEGMENTS_LENGTH, corpus_path=CORPUS_PAT
         # Create pairs
         for i in range(segments_length, len(chord)):
             
-            # '131', '15' for melody and chord sequences of separators respectively
+            # '132', '15' for melody and chord sequences of separators respectively
             melody_left = mul_seg(melody,i,segments_length,'left',132)
             melody_mid = melody[i]
             melody_right = mul_seg(melody,i,segments_length,'right',132)[::-1]
