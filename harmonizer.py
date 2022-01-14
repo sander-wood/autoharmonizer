@@ -182,7 +182,7 @@ def generate_chord(chord_model, melody_data, rhythm_data, segments_length=SEGMEN
 
                 continue
 
-            # '131', '15' for melody and chord sequences of separators respectively
+            # '132', '15' for melody and chord sequences of separators respectively
             input_melody_left = mul_seg(melody_segs,i,segments_length,'left',132)
             input_melody_mid = melody_segs[i]
             input_melody_right = mul_seg(melody_segs,i,segments_length,'right',132)[::-1]
