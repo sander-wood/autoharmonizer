@@ -6,7 +6,7 @@ This is the source code of AutoHarmonizer, a harmonic rhythm-controllable melody
   
 The input melodies and harmonized samples are in the `inputs` and `outputs` folders respectively.  
   
-The musical discrimination test is available at https://sander-wood.github.io/autoharmonizer.  
+The musical discrimination test is available at https://sander-wood.github.io/autoharmonizer/test.  
   
 For more information, see our paper: [arXiv paper](https://arxiv.org/abs/2112.11122).  
   
