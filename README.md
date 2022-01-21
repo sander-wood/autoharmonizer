@@ -73,6 +73,7 @@ Keras: 2.3.0
 keras-metrics: 1.1.0  
 tensorflow-gpu: 2.2.0  
 music21: 6.7.1  
+tqdm: 4.62.3  
   
 PS: Third party libraries can be installed using the `pip install` command.
 
