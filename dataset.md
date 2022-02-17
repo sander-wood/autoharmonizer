@@ -3,22 +3,30 @@ layout: default
 title: Dataset
 ---
 
-# Dataset Harmonized by AutoHarmonizer
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+        inlineMath: [['$','$']]
+        }
+    });
+</script>
 
-Symbolic music datasets are important for both music information retrieval and music generation. However, there is a lack of large-scale lead sheet symbolic music datasets. Therefore, we create a lead sheet dataset based on Session Dataset, named as the Session Lead Sheet Dataset (SLSD), containing 40,925 tunes with chords. 
+# Chordified JSB  Chorales  Dataset 
+Since the original JSB Chorales Dataset has no chord progressions and the workload of carrying out harmonic analysis manually is too large, we perform the following automated pre-processing to add chord symbols.  
+  
+1.　**Flattening**: all repeat barlines are removed by flattening each score to make them more machine-readable.  
+2.　**Chordify**: a tool in [music21](https://web.mit.edu/music21/doc/usersGuide/usersGuide_09_chordify.html?highlight=chordify) for simplifying a complex score with multiple parts into a succession of chords in one part.  
+3.　**Labelling**: we first move all the chords to the closed position, and then label the chordified chords as chord symbols. Finally, all chord symbols on strong beats of the soprano part are kept.  
 
-This dataset is collected as follows. We first download all the tunes in ABC format from the Session, a community website dedicated to Irish traditional music. We then convert those ABC files to MusicXML with the music21 toolkit. However, the conversion is not entirely accurate (e.g., extra rests are added at the end of pickup bars). Therefore, we clean the converted files and remove the repeat notation by flattening each score to make them more machine-readable. Finally, we use AutoHarmonizer (d=0.5) to generate the corresponding harmonies for these Irish traditional tunes. Each harmonized piece contains melody and corresponding chord progression, and metadata information such as key signature, time signature, title and genre.
+After removing a few scores that cannot be properly chordified, we ended up with a total of 366 chorales for training (90\%) and validation (10\%).  
 
-Table 3: Comparison of some existing public lead sheetdatasets and the proposed dataset.
-<br>
-<center><img src="figs/tbl3.jpg" alt="table3" style="zoom:70%"></center>
-<br>
+You can find this chordified version of JSB Chorales dataset in the `dataset` folder. 
 
-To the best of our knowledge, SLSD is the largest lead sheet MusicXML dataset so far. Table 3 shows the number of notes, chords, bars and pieces of different datasets. In addition, as we cannot read the original TTD directly, we use its MIDI version for statistical information other than chords (the MIDI version does not contain chords), which is instead obtained by counting the number of occurrences of the keyword "<chord>" in those XML files. Therefore, the statistical results in this dataset are for information purposes only and are not guaranteed to be accurate.
-
-<center>Table 4: The results comparison of NLSD and SLSD in various metrics.</center>
-<br>
-<center><img src="figs/tbl4.jpg" alt="table4" style="zoom:70%"></center>
-<br>
-
-The SLSD can be used but not limited to the following research topics including: 1) harmonic study, 2) ethnomusicological study, 3) melody harmonization and 4) melody generation based on chords. Although the chords are machine-generated, the AutoHarmonizer is closer to human-composed chord progressions than other melody harmonization systems, as it takes into account harmonic rhythms. In addition, given that Ireland and Britain share a very similar cultural background, using the AutoHarmonizer trained on NLSD to produce the chord progressions for the Session Dataset would be more in keeping with its melodic style. For intuitive comparison, Table 4 gives the results of NLSD and SLSD in each metric. We suggest using this dataset for pre-training and later fine-tuning on a dataset like NLSD to further improve the performance of deep learning models.
+<div align="center">
+  <img src=https://github.com/sander-wood/deepchoir/blob/homepage/figs/070-1.png width=35% />
+  <img src=https://github.com/sander-wood/deepchoir/blob/homepage/figs/070-2.png width=35% />
+    
+  Chordified BWV 322 exported in MuseScore3
+</div>
