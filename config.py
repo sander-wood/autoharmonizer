@@ -24,7 +24,7 @@ CHO_NUM_LAYERS = 3
 CHO_BATCH_SIZE = 64
 CHO_EPOCHS = 5
 
-# 'harmonizor.py'
+# 'harmonizer.py'
 RHYTHM_DENSITY = 0.5
 WATER_MARK = True
 LEADSHEET = True
