@@ -84,7 +84,7 @@ PS: Third party libraries can be installed using the `pip install` command.
   
 You can set the parameter RHYTHM_DENSITY∈(0, 1) in `config.py` to adjust the density of the generated chord progression. The lower the value of RHYTHM_DENSITY, the fewer chords will be generated, and vice versa.  
 
-PS: Make sure you are running the model on your GPU, otherwise you will encounter [InvalidArgumentError](]https://github.com/sander-wood/autoharmonizer/issues/2).  
+PS: Make sure you are running the model on your GPU, otherwise you will encounter [InvalidArgumentError](https://github.com/sander-wood/autoharmonizer/issues/2).  
 
 ## Use Your Own Dataset
 1.　Store all the lead sheets (MusicXML) in the `dataset` folder;  
