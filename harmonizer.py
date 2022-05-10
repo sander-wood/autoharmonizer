@@ -66,7 +66,7 @@ def generate_chord(chord_model, melody_data, beat_data, segment_length=SEGMENT_L
 
             # Tuning rhythm density
             if chord_per_bar:
-                if song_beat[idx]==4 and song_beat[idx-1]!=4 and not (idx==segment_length and song_melody[idx]==0):
+                if song_beat[idx]==4 and (song_melody[idx]!=song_melody[idx-1] or song_beat[idx]!=song_beat[idx-1]) and not (idx==segment_length and song_melody[idx]==0):
                     prediction = gamma_sampling(prediction, [[song_chord[-1]]], [1], return_probs=True)
                 
                 else:
