@@ -1,371 +1,94 @@
+import os
+import sys
+import pickle
 import numpy as np
-import math
+from config import *    
 from music21 import *
-from loader import music_loader
-from harmonic_rhythm_model import build_rhythm_model
-from chord_model import build_chord_model
-from chord_model import mul_seg
-from tensorflow.python.keras.utils.np_utils import to_categorical
-from keras.preprocessing.sequence import pad_sequences
 from tqdm import trange
-from config import *
+from copy import deepcopy
+from model import build_model
+from samplings import gamma_sampling
+from loader import get_filenames, convert_files
+from tensorflow.python.keras.utils.np_utils import to_categorical
 
-def sample(prediction, last_note=False, rhythm_density=RHYTHM_DENSITY):
-    
-    # If the prediction is from the chord model
-    if prediction.shape[0]==1:
+# use cpu
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
-        prediction = prediction.tolist()[0]
+# Load chord types
+with open(CHORD_TYPES_PATH, "rb") as filepath:
+    chord_types = pickle.load(filepath)
 
-        # Zeroing impossible values
-        prediction[14] = 0
-        prediction[15] = 0
+# mapping chord name to int
+chord_types_dict = {chord_types[i]: i+1 for i in range(len(chord_types))}
 
-        if not last_note:
-
-            prediction[0] = 0
-    
-    else:
-        
-        # Set upper and lower bounds for rhythm density
-        rhythm_density = max(0.01, rhythm_density)
-        rhythm_density = min(0.99, rhythm_density)
-
-        # Save the probabilities of non-holding tokens
-        rest_prob = 1-prediction[2]
-
-        # Change the holding token's probability
-        old_prob = prediction[2]
-        prediction[2] = prediction[2]**math.tan(math.pi*rhythm_density/2)
-
-        # Change the non-holding tokens' probabilities
-        for idx in range(len(prediction)):
-
-            if idx!=2:
-
-                prediction[idx] += (old_prob-prediction[2])*(prediction[idx]/rest_prob)
-
-    # Greedy sampling
-    return np.argmax(prediction)
-    
-
-def generate_rhythm(rhythm_model, melody_data, beat_data, segment_length=SEGMENT_LENGTH):
-
-    rhythm_data = []
-
-    # Process each melody sequence in the corpus
-    for idx, melody in enumerate(melody_data):
-        
-        # Load the corresponding beat sequence
-        beat = beat_data[idx]
-        
-        # '131', '4', '3' for melody, beat and rhythm sequences of paddings respectively
-        melody = [131]*segment_length + melody_data[idx] + [131]*segment_length
-        beat = [4]*segment_length + beat + [4]*segment_length
-        rhythm = [3]*segment_length
-
-        # Predict each token
-        for i in range(segment_length, len(melody)-segment_length):
-
-            # Create input data
-            input_melody_left = melody[i-segment_length: i] 
-            input_melody_mid = melody[i]
-            input_melody_right = melody[i+1: i+segment_length+1][::-1]
-            input_beat_left = beat[i-segment_length: i] 
-            input_beat_mid = beat[i]
-            input_beat_right = beat[i+1: i+segment_length+1][::-1]
-            input_rhythm_left = rhythm[i-segment_length: i]
-            
-            # One-hot vectorization
-            input_melody_left = to_categorical(input_melody_left, num_classes=132)[np.newaxis, ...]
-            input_melody_mid = to_categorical(input_melody_mid, num_classes=132)[np.newaxis, ...]
-            input_melody_right = to_categorical(input_melody_right, num_classes=132)[np.newaxis, ...]
-            input_beat_left = to_categorical(input_beat_left, num_classes=5)[np.newaxis, ...]
-            input_beat_mid = to_categorical(input_beat_mid, num_classes=5)[np.newaxis, ...]
-            input_beat_right = to_categorical(input_beat_right, num_classes=5)[np.newaxis, ...]
-            input_rhythm_left = to_categorical(input_rhythm_left, num_classes=4)[np.newaxis, ...]
-
-            # Predict the next rhythm
-            prediction = rhythm_model.predict(x=[input_melody_left, input_melody_mid, input_melody_right, input_beat_left, input_beat_mid, input_beat_right, input_rhythm_left])[0]
-            rhythm_idx = sample(prediction)
-
-            # Updata rhythm sequence
-            rhythm.append(rhythm_idx)
-        
-        # Remove the leading padding 
-        rhythm_data.append(rhythm[segment_length:])
-    
-    return rhythm_data
+def blockPrint():
+    sys.stdout = open(os.devnull, 'w')
 
 
-def generate_chord(chord_model, melody_data, rhythm_data, segments_length=SEGMENTS_LENGTH):
+def enablePrint():
+    sys.stdout = sys.__stdout__
+
+
+def generate_chord(chord_model, melody_data, beat_data, segment_length=SEGMENT_LENGTH, rhythm_gamma=RHYTHM_DENSITY, chord_per_bar=CHORD_PER_BAR):
 
     chord_data = []
 
     # Process each melody sequence in the corpus
-    for idx, melody in enumerate(melody_data):
+    for idx, song_melody in enumerate(melody_data):
 
-        # Load the corresponding rhythm sequence
-        rhythm = rhythm_data[idx]
-        melody_segs = []
-        chord_segs = []
-
-        # '131', '14' for melody and chord sequences of paddings respectively
-        for i in range(segments_length):
-
-            if i!=segments_length-1:
-
-                melody_segs.append([131]*16)
-
-            chord_segs.append([14]*4)
+        # Load the corresponding beat sequence
+        song_melody = segment_length*[0] + song_melody + segment_length*[0]
+        song_beat = segment_length*[0] + beat_data[idx] + segment_length*[0]
+        song_chord  = segment_length*[0]
+        
+        # Predict each pair
+        for idx in range(segment_length, len(song_melody)-segment_length):
             
-        melody_seg = [131]*16
-    
-        # Read tokens from rhythm sequence
-        for t_idx, token in enumerate(rhythm):
+            # Create input data
+            melody_left = song_melody[idx-segment_length:idx]
+            melody_right = song_melody[idx:idx+segment_length][::-1]
+            beat_left = song_beat[idx-segment_length:idx]
+            beat_right = song_beat[idx:idx+segment_length][::-1]
+            chord_left = song_chord[idx-segment_length:idx]
             
-            # If is non-holding token
-            if token<2:
+            # One-hot vectorization
+            melody_left = to_categorical(melody_left, num_classes=128)
+            melody_right = to_categorical(melody_right, num_classes=128)
+            beat_left = to_categorical(beat_left, num_classes=5)
+            beat_right = to_categorical(beat_right, num_classes=5)
+            chord_left = to_categorical(chord_left, num_classes=len(chord_types))
+
+            # expand dimension
+            melody_left = np.expand_dims(melody_left, axis=0)
+            melody_right = np.expand_dims(melody_right, axis=0)
+            beat_left = np.expand_dims(beat_left, axis=0)
+            beat_right = np.expand_dims(beat_right, axis=0)
+            chord_left = np.expand_dims(chord_left, axis=0)
+            
+            # Predict the next chord
+            prediction = chord_model.predict(x=[melody_left, melody_right, beat_left, beat_right, chord_left])[0]
+
+            if song_melody[idx]!=0 and song_beat[idx]==4:
+                prediction = gamma_sampling(prediction, [[0]], [1], return_probs=True)
+
+            # Tuning rhythm density
+            if chord_per_bar:
+                if song_beat[idx]==4 and song_beat[idx-1]!=4 and not (idx==segment_length and song_melody[idx]==0):
+                    prediction = gamma_sampling(prediction, [[song_chord[-1]]], [1], return_probs=True)
                 
-                # If is rest
-                if token==0:
-
-                    chord_segs.append([13]*4)
-
                 else:
-
-                    chord_segs.append(['chord'])
-
-                # Make sure melody_seg is within a whole note
-                if len(melody_seg)>16:
-
-                    melody_seg = melody_seg[:16]
-                    
-                melody_segs.append(melody_seg)
-                melody_seg = [melody[t_idx]]
-
-                if (t_idx+1)==len(rhythm):
-                    
-                    # Make sure melody_seg is within a whole note
-                    if len(melody_seg)>16:
-
-                        melody_seg = melody_seg[:16]
-                    
-                    melody_segs.append(melody_seg)  
+                    prediction = gamma_sampling(prediction, [[song_chord[-1]]], [0], return_probs=True)
 
             else:
+                prediction = gamma_sampling(prediction, [[song_chord[-1]]], [rhythm_gamma], return_probs=True)
 
-                melody_seg.append(melody[t_idx])     
-                
-                if (t_idx+1)==len(rhythm):
-                    
-                    # Make sure melody_seg is within a whole note
-                    if len(melody_seg)>16:
-
-                        melody_seg = melody_seg[:16]
-                    
-                    melody_segs.append(melody_seg)  
-                    
-        # '131' for melody sequence of padding
-        for i in range(segments_length):
-
-            melody_segs.append([131]*16)
-
-        # Set maximum length
-        melody_segs_length = segments_length*16+segments_length-1
-        chord_segs_length = segments_length*4+segments_length-1
-        
-        for i in range(segments_length, len(chord_segs)):
-            
-            # Skip if the current one is a rest
-            if len(chord_segs[i])==[13, 13, 13, 13]:
-
-                continue
-
-            # '132', '15' for melody and chord sequences of separators respectively
-            input_melody_left = mul_seg(melody_segs,i,segments_length,'left',132)
-            input_melody_mid = melody_segs[i]
-            input_melody_right = mul_seg(melody_segs,i,segments_length,'right',132)[::-1]
-            input_chord_left = mul_seg(chord_segs,i,segments_length,'left',15)
-            
-            # Padding input
-            input_melody_left = pad_sequences([input_melody_left], padding='post', maxlen=melody_segs_length)
-            input_melody_mid = pad_sequences([input_melody_mid], padding='post', maxlen=16)
-            input_melody_right = pad_sequences([input_melody_right], padding='post', maxlen=melody_segs_length)
-            input_chord_left = pad_sequences([input_chord_left], padding='post', maxlen=chord_segs_length)
-
-            # Predict the next chord
-            predictions = chord_model.predict(x=[input_melody_left, input_melody_mid, input_melody_right, input_chord_left]) 
-            
-            first = sample(predictions[0])
-            second = sample(predictions[1])
-            third = sample(predictions[2])
-            fourth = sample(predictions[3], last_note=True)
-
-            # Updata chord sequence
-            chord_segs[i] = [first, second, third, fourth]
+            cho_idx = np.argmax(prediction, axis=-1)
+            song_chord.append(cho_idx)
         
         # Remove the leading padding 
-        chord_segs = chord_segs[segments_length:]
-        
-        cnt = 0
-        chord = []
-        
-        # Create chord data
-        for t_idx, token in enumerate(rhythm):
+        chord_data.append(song_chord[segment_length:])
 
-            # If is onset
-            if token<2:
-                
-                cur_chord = chord_segs[cnt]
-
-                if cur_chord==[13,13,13,13]:
-
-                    chord.append(129)
-                    cnt += 1
-                    continue
-                
-                # Remove '0'
-                for cur_idx in range(4):
-
-                    if cur_chord[cur_idx]==0:
-
-                        del cur_chord[cur_idx]
-                    
-                    else:
-
-                        cur_chord[cur_idx]-=1
-
-                bias = cur_chord[0]+48
-                cur_chord = [bias]+[cur_token+bias for cur_token in cur_chord[1:]]
-                chord.append(cur_chord)
-                cnt += 1
-            
-            # If is holding
-            else:
-
-                chord.append(130)
-
-        chord_data.append(chord)
-    
     return chord_data
-
-
-def txt2music(txt, gap, meta):
-
-    # Initialization
-    notes = [meta[0], meta[1]]
-    pre_element = None
-    duration = 0.0
-    offset = 0.0
-    corrected_gap = -1*(gap.semitones)
-
-    # Decode text sequences
-    for element in txt+[131]:
-        
-        if element!=130:
-
-            # Create new note
-            if pre_element!=None:
-
-                if isinstance(pre_element, int):
-
-                    # If is note
-                    if pre_element<129:
-
-                        new_note = note.Note(pre_element-1+corrected_gap)
-
-                    # If is rest
-                    elif pre_element==129:
-
-                        new_note = note.Rest()
-                    
-                # If is chord
-                else:
-
-                    new_note = chord.Chord([note.Note(cur_note+corrected_gap) for cur_note in pre_element])
-                
-                new_note.quarterLength = duration
-                new_note.offset = offset
-                notes.append(new_note)
-            
-            # Updata offset, duration and save the element
-            offset += duration
-            duration = 0.25
-            pre_element = element
-            
-            # Updata time signature
-            if len(meta[2])!=0:
-
-                if meta[2][0].offset<=offset:
-
-                    notes.append(meta[2][0])
-                    del meta[2][0]
-        
-        else:
-            
-            # Updata duration
-            duration += 0.25
-
-    return notes
-
-
-def score_converter(melody_part, chord_part):
-    
-    # Initialization
-    score = []
-    chord_part = [element for element in chord_part if isinstance(element, chord.Chord)]
-
-    # Read melody part
-    for element in melody_part:
-        
-        # If is note and chord offset not greater than note offset
-        if (isinstance(element, note.Note) or isinstance(element, note.Rest) or isinstance(element, chord.Chord)) \
-            and len(chord_part)>0 and element.offset>=chord_part[0].offset:
-
-            # Converted to ChordSymbol
-            try:
-                chord_symbol = harmony.chordSymbolFromChord(chord_part[0])
-                chord_symbol.offset = chord_part[0].offset
-
-                score.append(chord_symbol)
-                del chord_part[0]
-            
-            except:
-                
-                # Illegal ChordSymbol, converted to a major triad
-                new_chord = [n for n in chord_part[0]]
-                chord_symbol = harmony.ChordSymbol(root=new_chord[0].name, kind='major')
-                chord_symbol.offset = chord_part[0].offset
-
-                score.append(chord_symbol)
-                del chord_part[0]
-        
-        score.append(element)
-    
-    # Save as mxl
-    score = stream.Stream(score)
-
-    return score
-
-
-def merge_scores(scores):
-
-    score = []
-    extra_offset = 0
-    
-    # Traverse all music
-    for sub_score in scores:
-
-        for element in sub_score:
-
-            element.offset += extra_offset
-            score.append(element)
-        
-        # Add additional bias offset
-        extra_offset = element.offset+element.quarterLength
-    
-    return stream.Stream(score)
 
 
 def watermark(score, filename, water_mark=WATER_MARK):
@@ -380,62 +103,84 @@ def watermark(score, filename, water_mark=WATER_MARK):
     return score
 
 
-def export_music(melody_part, chord_data, gap_data, meta_data, filename, output_path=OUTPUTS_PATH, leadsheet=LEADSHEET):
+def export_music(score, chord_data, gap_data, filename, beat_data, repeat_chord=REPEAT_CHORD, output_path=OUTPUTS_PATH):
 
-    chord_part = []
+    # Convert to music
+    harmony_list = []
+    offset = 0.0
+    filename = os.path.basename(filename)
+    filename = '.'.join(filename.split('.')[:-1])
 
-    # Traverse all harmonies
-    for idx in range(len(chord_data)):
-
-        # Chord sequence to chord part
-        chord_subpart = txt2music(chord_data[idx], gap_data[idx], meta_data[idx])
-        chord_subpart = stream.Stream(chord_subpart)
-        chord_part.append(chord_subpart)
-
-    melody_part = merge_scores(melody_part)
-    chord_part = merge_scores(chord_part)
-
-    if leadsheet:
+    for idx, song_chord in enumerate(chord_data):
+        gap = gap_data[idx].semitones
+        song_chord = [chord_types[int(cho_idx)] for cho_idx in song_chord]
+        song_beat = beat_data[idx]
+        pre_chord = None
         
-        try:
+        for t_idx, cho in enumerate(song_chord):
+            if cho != 'R' and (pre_chord != cho or (repeat_chord and t_idx!=0 and song_beat[t_idx]==4 and song_beat[t_idx-1]!=4)):
+                try:
+                    chord_symbol= harmony.ChordSymbol(cho)
+                except:
+                    # replace the first 'b' to '-'
+                    chord_symbol= harmony.ChordSymbol(cho.replace('b', '-', 1))
 
-            # Export as leadsheet
-            score = score_converter(melody_part, chord_part)
-            score = watermark(score, filename.split('.')[-2])
-            score.write('mxl', fp=output_path+'/'+filename.split('.')[-2]+'.mxl')
-        
-        except:
-    
-            # Export as midi
-            print('Warning: failed to export %s as lead sheet, now exporting as midi...' %(filename))
-            score = stream.Stream([melody_part, chord_part])
-            score = watermark(score, filename.split('.')[-2])
-            score.write('mid', fp=output_path+'/'+filename.split('.')[-2]+'.mid')
-            
-    else:
-    
-        # Export as midi
-        score = stream.Stream([melody_part, chord_part])
-        score = watermark(score, filename.split('.')[-2])
-        score.write('mid', fp=output_path+'/'+filename.split('.')[-2]+'.mid')
-        
-        
+                chord_symbol = chord_symbol.transpose(-gap)
+                chord_symbol.offset = offset
+                harmony_list.append(chord_symbol)
+            offset += 0.25
+            pre_chord = cho
+
+    h_idx=  0
+    new_score = []
+    offset_list = []
+
+    for m in score:
+        if isinstance(m, stream.Measure):
+            new_m = deepcopy(m)
+            m_list = []
+            offset_list.append(m.offset)
+            for n in new_m:
+                if not isinstance(n, harmony.ChordSymbol):
+                    if h_idx<len(harmony_list) and n.offset+m.offset>=harmony_list[h_idx].offset:
+                        harmony_list[h_idx].offset -= m.offset
+                        m_list.append(harmony_list[h_idx])
+                        h_idx += 1
+                    m_list.append(n)
+
+            new_m.elements = m_list
+            new_score.append(new_m)
+
+    # Convert to score
+    score = stream.Score(new_score)
+    for m_idx, m in enumerate(score):
+        m.offset = offset_list[m_idx]
+    score = watermark(score, filename)
+    blockPrint()
+    score.write('mxl', fp=output_path+'/'+filename+'.mxl')
+    enablePrint()
+
 
 if __name__ == "__main__":
 
     # Load data from 'inputs'
-    melody_data, beat_data, gap_data, meta_data, melody_parts, filenames = music_loader(path=INPUTS_PATH, fromDataset=False)
+    filenames = get_filenames(input_dir=INPUTS_PATH)
+    data_corpus = convert_files(filenames, fromDataset=False)
 
     # Build harmonic rhythm and chord model
-    rhythm_model = build_rhythm_model(SEGMENT_LENGTH, HAR_RNN_SIZE, HAR_NUM_LAYERS, 'rhythm_'+WEIGHTS_PATH)
-    chord_model = build_chord_model(SEGMENTS_LENGTH, CHO_RNN_SIZE, CHO_NUM_LAYERS, 'chord_'+WEIGHTS_PATH)
+    model = build_model(SEGMENT_LENGTH, RNN_SIZE, NUM_LAYERS, DROPOUT, WEIGHTS_PATH, training=False)
     
     # Process each melody sequence
-    for idx in trange(len(melody_data)):
+    for idx in trange(len(data_corpus)):
         
+        melody_data = data_corpus[idx][0]
+        beat_data = data_corpus[idx][1]
+        gap_data = data_corpus[idx][2]
+        score = data_corpus[idx][3]
+        filename = data_corpus[idx][4]
+
         # Generate harmonic rhythm and chord data
-        rhythm_data = generate_rhythm(rhythm_model, melody_data[idx], beat_data[idx])
-        chord_data = generate_chord(chord_model, melody_data[idx], rhythm_data)
+        chord_data = generate_chord(model, melody_data, beat_data)
 
         # Export music file
-        export_music(melody_parts[idx], chord_data, gap_data[idx], meta_data[idx], filenames[idx])
+        export_music(score, chord_data, gap_data, filename, beat_data)

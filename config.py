@@ -1,6 +1,7 @@
 # Path setting
 DATASET_PATH = "dataset"
-CORPUS_PATH = "corpus.bin"
+CORPUS_PATH = "data_corpus.bin"
+CHORD_TYPES_PATH = 'chord_types.bin'
 WEIGHTS_PATH = 'weights.hdf5'
 INPUTS_PATH = "inputs"
 OUTPUTS_PATH = "outputs"
@@ -8,23 +9,17 @@ OUTPUTS_PATH = "outputs"
 # 'loader.py'
 EXTENSION = ['.musicxml', '.xml', '.mxl']
 
-# 'harmonic_rhythm_model.py'
-HAR_VAL_RATIO = 0.1
+# '.model.py'
+VAL_RATIO = 0.1
+DROPOUT = 0.2
 SEGMENT_LENGTH = 32
-HAR_RNN_SIZE = 128
-HAR_NUM_LAYERS = 2
-HAR_BATCH_SIZE = 64
-HAR_EPOCHS = 4
+RNN_SIZE = 128
+NUM_LAYERS = 3
+BATCH_SIZE = 2048
+EPOCHS = 20
 
-# 'chord_model.py'
-CHO_VAL_RATIO = 0.1
-SEGMENTS_LENGTH = 2
-CHO_RNN_SIZE = 128
-CHO_NUM_LAYERS = 3
-CHO_BATCH_SIZE = 64
-CHO_EPOCHS = 5
-
-# 'harmonizer.py'
-RHYTHM_DENSITY = 0.5
+# 'harmonizor.py'
+RHYTHM_DENSITY = 0.6
+CHORD_PER_BAR = False
+REPEAT_CHORD = False
 WATER_MARK = True
-LEADSHEET = True
