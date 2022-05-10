@@ -74,6 +74,7 @@ keras-metrics: 1.1.0
 tensorflow-gpu: 2.2.0  
 music21: 6.7.1  
 tqdm: 4.62.3  
+samplings: 0.1.5
   
 PS: Third party libraries can be installed using the `pip install` command.
 
@@ -82,14 +83,14 @@ PS: Third party libraries can be installed using the `pip install` command.
 2.　Simply run `harmonizer.py`;  
 3.　Wait a while and the harmonized melodies will be saved in the `outputs` folder.  
   
-You can set the parameter RHYTHM_DENSITY∈(0, 1) in `config.py` to adjust the density of the generated chord progression. The lower the value of RHYTHM_DENSITY, the fewer chords will be generated, and vice versa.  
+You can set the parameter RHYTHM_DENSITY∈[0, 1] in `config.py` to adjust the density of the generated chord progression. The lower the value of RHYTHM_DENSITY, the fewer chords will be generated, and vice versa.  
 
 PS: Make sure you are running the model on your GPU, otherwise you will encounter [InvalidArgumentError](https://github.com/sander-wood/autoharmonizer/issues/2).  
 
 ## Use Your Own Dataset
 1.　Store all the lead sheets (MusicXML) in the `dataset` folder;  
-2.　Run `loader.py`, which will generate `rhythm_corpus.bin` and `chord_corpus.bin`;  
-3.　Run `train.py`, which will generate `rhythm_weights.hdf5` and `chord_weights.hdf5`.  
+2.　Run `loader.py`, which will generate `data_corpus.bin`;  
+3.　Run `model.py`, which will generate `weights.hdf5`.  
   
 After that, you can use `harmonizer.py` to harmonize music with chord progressions that fit the musical style of the new dataset.   
   
