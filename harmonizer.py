@@ -1,5 +1,5 @@
 import os
-import sys
+import warnings
 import pickle
 import numpy as np
 from config import *    
@@ -13,6 +13,7 @@ from tensorflow.python.keras.utils.np_utils import to_categorical
 
 # use cpu
 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+warnings.filterwarnings("ignore")
 
 # Load chord types
 with open(CHORD_TYPES_PATH, "rb") as filepath:
@@ -20,14 +21,6 @@ with open(CHORD_TYPES_PATH, "rb") as filepath:
 
 # mapping chord name to int
 chord_types_dict = {chord_types[i]: i+1 for i in range(len(chord_types))}
-
-def blockPrint():
-    sys.stdout = open(os.devnull, 'w')
-
-
-def enablePrint():
-    sys.stdout = sys.__stdout__
-
 
 def generate_chord(chord_model, melody_data, beat_data, segment_length=SEGMENT_LENGTH, rhythm_gamma=RHYTHM_DENSITY, chord_per_bar=CHORD_PER_BAR):
 
@@ -103,7 +96,7 @@ def watermark(score, filename, water_mark=WATER_MARK):
     return score
 
 
-def export_music(score, chord_data, gap_data, filename, beat_data, repeat_chord=REPEAT_CHORD, output_path=OUTPUTS_PATH):
+def export_music(score, chord_data, gap_data, filename, beat_data, repeat_chord=REPEAT_CHORD, output_path=OUTPUTS_PATH, water_mark=WATER_MARK):
 
     # Convert to music
     harmony_list = []
@@ -155,10 +148,9 @@ def export_music(score, chord_data, gap_data, filename, beat_data, repeat_chord=
     score = stream.Score(new_score)
     for m_idx, m in enumerate(score):
         m.offset = offset_list[m_idx]
-    score = watermark(score, filename)
-    blockPrint()
+    if water_mark:
+        score = watermark(score, filename)
     score.write('mxl', fp=output_path+'/'+filename+'.mxl')
-    enablePrint()
 
 
 if __name__ == "__main__":
@@ -181,6 +173,6 @@ if __name__ == "__main__":
 
         # Generate harmonic rhythm and chord data
         chord_data = generate_chord(model, melody_data, beat_data)
-
+        
         # Export music file
-        export_music(score, chord_data, gap_data, filename, beat_data)
+        export_music(score, chord_data, gap_data, filename, beat_data,output_path=OUTPUTS_PATH)
