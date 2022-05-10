@@ -10,6 +10,8 @@ The musical discrimination test is available at https://sander-wood.github.io/au
   
 For more information, see our paper: [arXiv paper](https://arxiv.org/abs/2112.11122).  
   
+We have updated the code for AutoHarmonizer to now be one stage compared to the original two stage generation. The paper will be updated around mid-2022.  
+  
 ## Nottingham Lead Sheet Dataset
 
 The music generation start-up company Jukedeck put some efforts into cleaning the database and released it at https://github.com/jukedeck/nottingham-dataset in MIDI format.  
