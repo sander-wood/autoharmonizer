@@ -19,9 +19,6 @@ warnings.filterwarnings("ignore")
 with open(CHORD_TYPES_PATH, "rb") as filepath:
     chord_types = pickle.load(filepath)
 
-# mapping chord name to int
-chord_types_dict = {chord_types[i]: i+1 for i in range(len(chord_types))}
-
 def generate_chord(chord_model, melody_data, beat_data, segment_length=SEGMENT_LENGTH, rhythm_gamma=RHYTHM_DENSITY, chord_per_bar=CHORD_PER_BAR):
 
     chord_data = []
@@ -111,13 +108,10 @@ def export_music(score, chord_data, gap_data, filename, beat_data, repeat_chord=
         pre_chord = None
         
         for t_idx, cho in enumerate(song_chord):
+            cho = cho.replace('N.C.', 'R')
+            cho = cho.replace('bpedal', '-pedal')
             if cho != 'R' and (pre_chord != cho or (repeat_chord and t_idx!=0 and song_beat[t_idx]==4 and song_beat[t_idx-1]!=4)):
-                try:
-                    chord_symbol= harmony.ChordSymbol(cho)
-                except:
-                    # replace the first 'b' to '-'
-                    chord_symbol= harmony.ChordSymbol(cho.replace('b', '-', 1))
-
+                chord_symbol= harmony.ChordSymbol(cho)
                 chord_symbol = chord_symbol.transpose(-gap)
                 chord_symbol.offset = offset
                 harmony_list.append(chord_symbol)
