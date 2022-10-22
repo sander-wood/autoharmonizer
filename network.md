@@ -22,5 +22,5 @@ For the above reason, we chose Bi-LSTM as the backbone network for AutoHarmonize
 <br>
 <center><img src="figs/fig2.png" alt="fig4" style="zoom:60%"></center>
 <br>
-<center>Figure 2: The architecture of AutoHarmonizer, which predicts chord symbols frame-by-frame (sixteenth note).</center>
+Figure 2: The architecture of AutoHarmonizer, which predicts chord symbols frame-by-frame (sixteenth note).
 <br>
