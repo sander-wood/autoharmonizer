@@ -13,6 +13,8 @@ title: Data Representation
     });
 </script>
 
+## Data Representation
+
 Our data representation takes into account two pieces of meta-information from sheet music, namely the time signature and the key signature. As shown in Fig. 1, each lead sheet is encoded into four sequences of the same length.
 
 <br>
