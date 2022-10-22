@@ -13,7 +13,7 @@ title: Controllable Harmonic Density
     });
 </script>
 
-## Controllable Harmonic Density
+# Controllable Harmonic Density
 
 Based on the assumption that some attributes of the generated text are closely related to the number of occurrences of some tokens, Wu et al. proposed [gamma sampling](https://arxiv.org/pdf/2205.06036.pdf) for controlling language models. It achieved controllable text generation by scaling the probability $p$ of the attribute-related token during generation time:
 
