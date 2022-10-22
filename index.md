@@ -13,7 +13,7 @@ title: Home
     });
 </script>
 
-## Generating Chords from Melody with Flexible Harmonic Rhythm and Controllable Harmonic Density
+# Generating Chords from Melody with Flexible Harmonic Rhythm and Controllable Harmonic Density
 
 Melody harmonization, i.e., generating a chord progression for a user-given melody, remains a challenging task to this day. A chord progression must not only be in harmony with the melody, but its harmonic rhythm is also interdependent on the melodic rhythm. Although previous neural network-based systems can effectively generate a chord progression for a melody, few studies have addressed controllable melody harmonization, and there has been a lack of focus on generating flexible harmonic rhythms. In this paper, we propose AutoHarmonizer, a harmonic density-controllable melody harmonization system with flexible harmonic rhythm. This system supports 1,462 chord types and can generate denser or sparser chord progressions for a given melody. Experimental results demonstrate the diversity of harmonic rhythms in the AutoHarmonizer-generated chord progressions and the effectiveness of controllable harmonic density.
 
