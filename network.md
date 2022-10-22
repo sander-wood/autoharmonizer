@@ -13,7 +13,7 @@ title: Network Architecture
     });
 </script>
 
-## Network Architecture
+# Network Architecture
 
 In real musical practice, it is first necessary to consider what the notes of the  current melody segment are when matching a melody to a chord progression. Generally (though not always), chords containing notes from the melody are preferred (e.g., chord tones). However, sometimes there is more than one chord that matches the current notes, thus the next chord needs to be decided based on the following melody notes.
 
