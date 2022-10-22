@@ -19,7 +19,7 @@ warnings.filterwarnings("ignore")
 with open(CHORD_TYPES_PATH, "rb") as filepath:
     chord_types = pickle.load(filepath)
 
-def generate_chord(chord_model, melody_data, beat_data, segment_length=SEGMENT_LENGTH, rhythm_gamma=RHYTHM_DENSITY, chord_per_bar=CHORD_PER_BAR):
+def generate_chord(chord_model, melody_data, beat_data, key_data, segment_length=SEGMENT_LENGTH, rhythm_gamma=RHYTHM_DENSITY, chord_per_bar=CHORD_PER_BAR):
 
     chord_data = []
 
@@ -29,6 +29,7 @@ def generate_chord(chord_model, melody_data, beat_data, segment_length=SEGMENT_L
         # Load the corresponding beat sequence
         song_melody = segment_length*[0] + song_melody + segment_length*[0]
         song_beat = segment_length*[0] + beat_data[idx] + segment_length*[0]
+        song_key = segment_length*[0] + key_data[idx] + segment_length*[0]
         song_chord  = segment_length*[0]
         
         # Predict each pair
@@ -39,6 +40,8 @@ def generate_chord(chord_model, melody_data, beat_data, segment_length=SEGMENT_L
             melody_right = song_melody[idx:idx+segment_length][::-1]
             beat_left = song_beat[idx-segment_length:idx]
             beat_right = song_beat[idx:idx+segment_length][::-1]
+            key_left = song_key[idx-segment_length:idx]
+            key_right = song_key[idx:idx+segment_length][::-1]
             chord_left = song_chord[idx-segment_length:idx]
             
             # One-hot vectorization
@@ -46,17 +49,21 @@ def generate_chord(chord_model, melody_data, beat_data, segment_length=SEGMENT_L
             melody_right = to_categorical(melody_right, num_classes=128)
             beat_left = to_categorical(beat_left, num_classes=5)
             beat_right = to_categorical(beat_right, num_classes=5)
+            key_left = to_categorical(key_left, num_classes=16)
+            key_right = to_categorical(key_right, num_classes=16)
+            condition_left = np.concatenate((beat_left, key_left), axis=-1)
+            condition_right = np.concatenate((beat_right, key_right), axis=-1)
             chord_left = to_categorical(chord_left, num_classes=len(chord_types))
 
             # expand dimension
             melody_left = np.expand_dims(melody_left, axis=0)
             melody_right = np.expand_dims(melody_right, axis=0)
-            beat_left = np.expand_dims(beat_left, axis=0)
-            beat_right = np.expand_dims(beat_right, axis=0)
+            condition_left = np.expand_dims(condition_left, axis=0)
+            condition_right = np.expand_dims(condition_right, axis=0)
             chord_left = np.expand_dims(chord_left, axis=0)
             
             # Predict the next chord
-            prediction = chord_model.predict(x=[melody_left, melody_right, beat_left, beat_right, chord_left])[0]
+            prediction = chord_model.predict(x=[melody_left, melody_right, condition_left, condition_right, chord_left])[0]
 
             if song_melody[idx]!=0 and song_beat[idx]==4:
                 prediction = gamma_sampling(prediction, [[0]], [1], return_probs=True)
@@ -93,7 +100,7 @@ def watermark(score, filename, water_mark=WATER_MARK):
     return score
 
 
-def export_music(score, chord_data, gap_data, filename, beat_data, repeat_chord=REPEAT_CHORD, output_path=OUTPUTS_PATH, water_mark=WATER_MARK):
+def export_music(score, beat_data, chord_data, filename, repeat_chord=REPEAT_CHORD, output_path=OUTPUTS_PATH, water_mark=WATER_MARK):
 
     # Convert to music
     harmony_list = []
@@ -102,7 +109,6 @@ def export_music(score, chord_data, gap_data, filename, beat_data, repeat_chord=
     filename = '.'.join(filename.split('.')[:-1])
 
     for idx, song_chord in enumerate(chord_data):
-        gap = gap_data[idx].semitones
         song_chord = [chord_types[int(cho_idx)] for cho_idx in song_chord]
         song_beat = beat_data[idx]
         pre_chord = None
@@ -112,7 +118,7 @@ def export_music(score, chord_data, gap_data, filename, beat_data, repeat_chord=
             cho = cho.replace('bpedal', '-pedal')
             if cho != 'R' and (pre_chord != cho or (repeat_chord and t_idx!=0 and song_beat[t_idx]==4 and song_beat[t_idx-1]!=4)):
                 chord_symbol= harmony.ChordSymbol(cho)
-                chord_symbol = chord_symbol.transpose(-gap)
+                chord_symbol = chord_symbol
                 chord_symbol.offset = offset
                 harmony_list.append(chord_symbol)
             offset += 0.25
@@ -161,12 +167,23 @@ if __name__ == "__main__":
         
         melody_data = data_corpus[idx][0]
         beat_data = data_corpus[idx][1]
-        gap_data = data_corpus[idx][2]
+        key_data = data_corpus[idx][2]
         score = data_corpus[idx][3]
         filename = data_corpus[idx][4]
 
         # Generate harmonic rhythm and chord data
-        chord_data = generate_chord(model, melody_data, beat_data)
         
-        # Export music file
-        export_music(score, chord_data, gap_data, filename, beat_data,output_path=OUTPUTS_PATH)
+        for i in range(6):
+            if i==0:
+                output_path = 'outputs-cpb'
+                rhythm_gamma = 0.5
+                chord_per_bar = True
+            else:
+                output_path = 'outputs-0.'+str(i+4)
+                rhythm_gamma = (i+4)/10
+                chord_per_bar = False
+            
+            chord_data = generate_chord(model, melody_data, beat_data, key_data, rhythm_gamma=rhythm_gamma, chord_per_bar=chord_per_bar)
+            
+            # Export music file
+            export_music(score, beat_data, chord_data, filename, output_path=output_path)

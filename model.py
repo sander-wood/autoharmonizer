@@ -24,6 +24,8 @@ class DataGenerator(Sequence):
                  input_melody_right, 
                  input_beat_left, 
                  input_beat_right, 
+                 input_key_left, 
+                 input_key_right,
                  input_chord_left,
                  output_chord,
                  chord_nums,
@@ -33,6 +35,8 @@ class DataGenerator(Sequence):
         self.input_melody_right = input_melody_right
         self.input_beat_left = input_beat_left
         self.input_beat_right = input_beat_right
+        self.input_key_left = input_key_left
+        self.input_key_right = input_key_right
         self.input_chord_left = input_chord_left
         self.output_chord = output_chord
         self.chord_nums = chord_nums
@@ -48,10 +52,14 @@ class DataGenerator(Sequence):
         onehot_melody_right = to_categorical(self.input_melody_right[index*self.batch_size:(index+1)*self.batch_size], num_classes=128)
         onehot_beat_left = to_categorical(self.input_beat_left[index*self.batch_size:(index+1)*self.batch_size], num_classes=5)
         onehot_beat_right = to_categorical(self.input_beat_right[index*self.batch_size:(index+1)*self.batch_size], num_classes=5)
+        onehot_key_left = to_categorical(self.input_key_left[index*self.batch_size:(index+1)*self.batch_size], num_classes=16)
+        onehot_key_right = to_categorical(self.input_key_right[index*self.batch_size:(index+1)*self.batch_size], num_classes=16)
+        onehot_condition_left = np.concatenate((onehot_beat_left, onehot_key_left), axis=-1)
+        onehot_condition_right = np.concatenate((onehot_beat_right, onehot_key_right), axis=-1)
         onehot_chord_left = to_categorical(self.input_chord_left[index*self.batch_size:(index+1)*self.batch_size], num_classes=self.chord_nums)
         onehot_chord = to_categorical(self.output_chord[index*self.batch_size:(index+1)*self.batch_size], num_classes=self.chord_nums)
 
-        return ([onehot_melody_left, onehot_melody_right, onehot_beat_left, onehot_beat_right, onehot_chord_left], onehot_chord)
+        return ([onehot_melody_left, onehot_melody_right, onehot_condition_left, onehot_condition_right, onehot_chord_left], onehot_chord)
 
 
 def create_training_data(segment_length=SEGMENT_LENGTH, chord_types_path=CHORD_TYPES_PATH, corpus_path=CORPUS_PATH,  val_ratio=VAL_RATIO):
@@ -71,6 +79,8 @@ def create_training_data(segment_length=SEGMENT_LENGTH, chord_types_path=CHORD_T
     input_melody_right = []
     input_beat_left = []
     input_beat_right = []
+    input_key_left = []
+    input_key_right = []
     input_chord_left = []
     output_chord = []
 
@@ -79,6 +89,8 @@ def create_training_data(segment_length=SEGMENT_LENGTH, chord_types_path=CHORD_T
     input_melody_right_val = []
     input_beat_left_val = []
     input_beat_right_val = []
+    input_key_left_val = []
+    input_key_right_val = []
     input_chord_left_val = []
     output_chord_val = []
 
@@ -101,7 +113,8 @@ def create_training_data(segment_length=SEGMENT_LENGTH, chord_types_path=CHORD_T
             # Load the corresponding beat and rhythm sequence
             song_melody = segment_length*[0] + song[0] + segment_length*[0]
             song_beat = segment_length*[0] + song[1] + segment_length*[0]
-            song_chord = segment_length*[0] + [chord_types_dict[cho] for cho in song[2]] + segment_length*[0]
+            song_key = segment_length*[0] + song[2] + segment_length*[0]
+            song_chord = segment_length*[0] + [chord_types_dict[cho] for cho in song[3]] + segment_length*[0]
 
             # Create pairs
             for idx in range(segment_length, len(song_melody)-segment_length):
@@ -110,6 +123,8 @@ def create_training_data(segment_length=SEGMENT_LENGTH, chord_types_path=CHORD_T
                 melody_right = song_melody[idx:idx+segment_length][::-1]
                 beat_left = song_beat[idx-segment_length:idx]
                 beat_right = song_beat[idx:idx+segment_length][::-1]
+                key_left = song_key[idx-segment_length:idx]
+                key_right = song_key[idx:idx+segment_length][::-1]
                 chord_left = song_chord[idx-segment_length:idx]
                 chord = song_chord[idx]
 
@@ -118,6 +133,8 @@ def create_training_data(segment_length=SEGMENT_LENGTH, chord_types_path=CHORD_T
                     input_melody_right.append(melody_right)
                     input_beat_left.append(beat_left)
                     input_beat_right.append(beat_right)
+                    input_key_left.append(key_left)
+                    input_key_right.append(key_right)
                     input_chord_left.append(chord_left)
                     output_chord.append(chord)
                 
@@ -126,6 +143,8 @@ def create_training_data(segment_length=SEGMENT_LENGTH, chord_types_path=CHORD_T
                     input_melody_right_val.append(melody_right)
                     input_beat_left_val.append(beat_left)
                     input_beat_right_val.append(beat_right)
+                    input_key_left_val.append(key_left)
+                    input_key_right_val.append(key_right)
                     input_chord_left_val.append(chord_left)
                     output_chord_val.append(chord)
 
@@ -133,8 +152,8 @@ def create_training_data(segment_length=SEGMENT_LENGTH, chord_types_path=CHORD_T
 
     print("Successfully read %d pieces" %(cnt))
      
-    return (input_melody_left, input_melody_right, input_beat_left, input_beat_right, input_chord_left, output_chord), \
-           (input_melody_left_val, input_melody_right_val, input_beat_left_val, input_beat_right_val, input_chord_left_val, output_chord_val)
+    return (input_melody_left, input_melody_right, input_beat_left, input_beat_right, input_key_left, input_key_right, input_chord_left, output_chord), \
+           (input_melody_left_val, input_melody_right_val, input_beat_left_val, input_beat_right_val, input_key_left_val, input_key_right_val, input_chord_left_val, output_chord_val)
 
 
 def build_model(segment_length, rnn_size, num_layers, dropout, weights_path=None, chord_types_path=CHORD_TYPES_PATH, training=True):
@@ -152,13 +171,13 @@ def build_model(segment_length, rnn_size, num_layers, dropout, weights_path=None
                                  name='input_melody_right')
     melody_right = TimeDistributed(Dense(12, activation='relu'))(input_melody_right)
 
-    input_beat_left = Input(shape=(segment_length, 5),
-                            name='input_beat_left')
-    beat_left = TimeDistributed(Dense(2, activation='relu'))(input_beat_left)
+    input_condition_left = Input(shape=(segment_length, 21),
+                            name='input_condition_left')
+    condition_left = TimeDistributed(Dense(5, activation='relu'))(input_condition_left)
 
-    input_beat_right = Input(shape=(segment_length, 5),
-                                name='input_beat_right')
-    beat_right = TimeDistributed(Dense(2, activation='relu'))(input_beat_right)
+    input_condition_right = Input(shape=(segment_length, 21),
+                                name='input_condition_right')
+    condition_right = TimeDistributed(Dense(5, activation='relu'))(input_condition_right)
 
     input_chord_left = Input(shape=(segment_length, len(chord_types)),
                                 name='input_chord_left')
@@ -188,21 +207,21 @@ def build_model(segment_length, rnn_size, num_layers, dropout, weights_path=None
         melody_right = BatchNormalization()(melody_right)
         melody_right = Dropout(dropout)(melody_right, training=training)
 
-        beat_left = LSTM(rnn_size,
-                            name='beat_left_'+str(idx+1),
-                            return_sequences=return_sequences)(beat_left)
+        condition_left = LSTM(rnn_size,
+                            name='condition_left_'+str(idx+1),
+                            return_sequences=return_sequences)(condition_left)
         if idx!=num_layers-1:
-            beat_left = TimeDistributed(Dense(rnn_size, activation='relu'))(beat_left)
-        beat_left = BatchNormalization()(beat_left)
-        beat_left = Dropout(dropout)(beat_left, training=training)
+            condition_left = TimeDistributed(Dense(rnn_size, activation='relu'))(condition_left)
+        condition_left = BatchNormalization()(condition_left)
+        condition_left = Dropout(dropout)(condition_left, training=training)
 
-        beat_right = LSTM(rnn_size,
-                            name='beat_right_'+str(idx+1),
-                            return_sequences=return_sequences)(beat_right)
+        condition_right = LSTM(rnn_size,
+                            name='condition_right_'+str(idx+1),
+                            return_sequences=return_sequences)(condition_right)
         if idx!=num_layers-1:
-            beat_right = TimeDistributed(Dense(rnn_size, activation='relu'))(beat_right)
-        beat_right = BatchNormalization()(beat_right)
-        beat_right = Dropout(dropout)(beat_right, training=training)
+            condition_right = TimeDistributed(Dense(rnn_size, activation='relu'))(condition_right)
+        condition_right = BatchNormalization()(condition_right)
+        condition_right = Dropout(dropout)(condition_right, training=training)
 
         chord_left = LSTM(rnn_size,
                             name='chord_left_'+str(idx+1),
@@ -217,8 +236,8 @@ def build_model(segment_length, rnn_size, num_layers, dropout, weights_path=None
                         [
                          melody_left,
                          melody_right,
-                         beat_left,
-                         beat_right,
+                         condition_left,
+                         condition_right,
                          chord_left
                         ]
                        )        
@@ -238,8 +257,8 @@ def build_model(segment_length, rnn_size, num_layers, dropout, weights_path=None
                   inputs=[
                           input_melody_left,
                           input_melody_right,
-                          input_beat_left,
-                          input_beat_right,
+                          input_condition_left,
+                          input_condition_right,
                           input_chord_left
                           ],
                   outputs= output_chord
@@ -302,8 +321,10 @@ def train_model(data,
                                     input_melody_right=data[1],
                                     input_beat_left=data[2],
                                     input_beat_right=data[3],
-                                    input_chord_left=data[4],
-                                    output_chord=data[5],
+                                    input_key_left=data[4],
+                                    input_key_right=data[5],
+                                    input_chord_left=data[6],
+                                    output_chord=data[7],
                                     chord_nums=chord_nums)
         
     if len(data_val[0])!=0:
@@ -312,8 +333,10 @@ def train_model(data,
                                       input_melody_right=data_val[1],
                                       input_beat_left=data_val[2],
                                       input_beat_right=data_val[3],
-                                      input_chord_left=data_val[4],
-                                      output_chord=data_val[5],
+                                      input_key_left=data_val[4],
+                                      input_key_right=data_val[5],
+                                      input_chord_left=data_val[6],
+                                      output_chord=data_val[7],
                                       chord_nums=chord_nums)
 
         # With validation set
