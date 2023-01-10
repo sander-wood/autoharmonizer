@@ -1,6 +1,4 @@
-# AutoHarmonizer
-
-## Generating Chords from Melody with Flexible Harmonic Rhythm and Controllable Harmonic Density
+# Generating Chords from Melody with Flexible Harmonic Rhythm and Controllable Harmonic Density
 
 This is the source code of AutoHarmonizer, a harmonic density-controllable melody harmonization system with flexible harmonic rhythm, trained/validated on Wikifonia.org's lead sheet dataset.  
   
