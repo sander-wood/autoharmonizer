@@ -100,7 +100,7 @@ def watermark(score, filename, water_mark=WATER_MARK):
     return score
 
 
-def export_music(score, beat_data, chord_data, filename, repeat_chord=REPEAT_CHORD, output_path=OUTPUTS_PATH, water_mark=WATER_MARK):
+def export_music(score, beat_data, chord_data, filename, repeat_chord=REPEAT_CHORD, outputs_path=OUTPUTS_PATH, water_mark=WATER_MARK):
 
     # Convert to music
     harmony_list = []
@@ -150,7 +150,7 @@ def export_music(score, beat_data, chord_data, filename, repeat_chord=REPEAT_CHO
         m.offset = offset_list[m_idx]
     if water_mark:
         score = watermark(score, filename)
-    score.write('mxl', fp=output_path+'/'+filename+'.mxl')
+    score.write('mxl', fp=outputs_path+'/'+filename+'.mxl')
 
 
 if __name__ == "__main__":
@@ -172,18 +172,7 @@ if __name__ == "__main__":
         filename = data_corpus[idx][4]
 
         # Generate harmonic rhythm and chord data
+        chord_data = generate_chord(model, melody_data, beat_data, key_data)
         
-        for i in range(6):
-            if i==0:
-                output_path = 'outputs-cpb'
-                rhythm_gamma = 0.5
-                chord_per_bar = True
-            else:
-                output_path = 'outputs-0.'+str(i+4)
-                rhythm_gamma = (i+4)/10
-                chord_per_bar = False
-            
-            chord_data = generate_chord(model, melody_data, beat_data, key_data, rhythm_gamma=rhythm_gamma, chord_per_bar=chord_per_bar)
-            
-            # Export music file
-            export_music(score, beat_data, chord_data, filename, output_path=output_path)
+        # Export music file
+        export_music(score, beat_data, chord_data, filename)
